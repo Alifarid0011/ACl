@@ -1,0 +1,49 @@
+package wire
+
+import (
+	"acl-casbin/config"
+	"acl-casbin/controller"
+	"acl-casbin/repository"
+	"acl-casbin/service"
+	"acl-casbin/utils"
+	"fmt"
+	"github.com/casbin/casbin/v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"strings"
+)
+
+func ProvideMongoClient() *mongo.Client {
+	BaseUri := fmt.Sprintf("%s://%s:%s@", config.Get.Mongo.Protocol, config.Get.Mongo.Username, config.Get.Mongo.Password)
+	for _, host := range config.Get.Mongo.Hosts {
+		BaseUri += host + ":" + config.Get.Mongo.Port + ","
+	}
+	Uri := fmt.Sprintf(strings.TrimRight(BaseUri, ",")+"/%s?authSource="+config.Get.Mongo.AuthSource, config.Get.Mongo.DbName)
+	return config.InitMongoClient(Uri)
+}
+func ProvideCasbinEnforcer(mongoClient *mongo.Client) *casbin.Enforcer {
+	return config.InitCasbin(mongoClient)
+}
+func ProvideUserRepository(db *mongo.Database) repository.UserRepository {
+	return repository.NewUserRepository(db)
+}
+
+func ProvideAuthService(
+	userRepo repository.UserRepository,
+	refreshTokenRepo repository.RefreshTokenRepository,
+	tokenManager utils.JwtToken,
+) service.AuthService {
+	return service.NewAuthService(userRepo, tokenManager, refreshTokenRepo)
+}
+
+func ProvideAuthController(authService service.AuthService) controller.AuthController {
+	return controller.NewAuthController(authService)
+}
+func ProvideRefreshTokenRepository(db *mongo.Database) repository.RefreshTokenRepository {
+	return repository.NewRefreshTokenRepository(db)
+}
+func ProvideJWT(secret string) utils.JwtToken {
+	return utils.NewJwtToken(secret)
+}
+func ProvideDatabase(client *mongo.Client) *mongo.Database {
+	return client.Database(config.Get.Mongo.DbName)
+}
