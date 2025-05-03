@@ -1,19 +1,19 @@
 app:
   name: "ACL Casbin App"
   version: "1.0.0"
-  port: 8080
+  port: 9550
   host: "localhost"
 
 mongo:
   hosts:
     - 127.0.0.1
-  username: ""
-  password: ""
+  username: "root"
+  password: "examplepassword"
   port: "27017"
   protocol: "mongodb"
-  db_name: "acl_db"
+  DbName: "acl"
   collection: "users"
-  auth_source: "admin"
+  AuthSource: "admin"
 
 redis:
   host: "localhost"
@@ -32,8 +32,8 @@ rate_limiter:
   bursts: 5
 
 token:
-  expiry_access_token: "15m"
-  expiry_refresh_token: "24h"
+  ExpiryAccessToken: 15
+  ExpiryRefreshToken: 240
   secret_key: "your-secret-key-here"
 
 logger:

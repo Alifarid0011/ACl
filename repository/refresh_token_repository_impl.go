@@ -24,8 +24,8 @@ func (r *refreshTokenRepositoryImpl) Store(uid, token string, expiresAt time.Tim
 	rt := model.RefreshToken{
 		Token:     token,
 		UID:       uid,
-		ExpiresAt: expiresAt,
-		CreatedAt: time.Now(),
+		ExpiresAt: expiresAt.UTC(),
+		CreatedAt: time.Now().UTC(),
 	}
 	_, err := r.collection.InsertOne(context.Background(), rt)
 	return err
@@ -50,14 +50,14 @@ func (r *refreshTokenRepositoryImpl) EnsureIndexes() error {
 		Keys: bson.D{{Key: "expires_at", Value: 1}},
 		Options: options.Index().
 			SetExpireAfterSeconds(0).
-			SetName("expiresAt_ttl"),
+			SetName("expires_at_ttl"),
 	}
 	// Normal index on UID
 	uidIndex := mongo.IndexModel{
 		Keys: bson.D{{Key: "uid", Value: 1}},
 		Options: options.Index().
 			SetName("uid_index").
-			SetUnique(true),
+			SetUnique(false),
 	}
 	_, err := r.collection.Indexes().CreateMany(context.Background(), []mongo.IndexModel{ttlIndex, uidIndex})
 	return err
