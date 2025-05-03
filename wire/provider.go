@@ -39,6 +39,10 @@ func ProvideAuthController(authService service.AuthService) controller.AuthContr
 	return controller.NewAuthController(authService)
 }
 
+// ProvideUserService wires UserRepository into UserServiceImpl.
+func ProvideUserService(userRepo repository.UserRepository) service.UserService {
+	return service.NewUserService(userRepo)
+}
 func ProvideUserController(userService service.UserService) controller.UserController {
 	return controller.NewUserController(userService)
 }

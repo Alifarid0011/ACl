@@ -8,6 +8,7 @@ package wire
 
 import (
 	"acl-casbin/controller"
+	"acl-casbin/repository"
 	"github.com/casbin/casbin/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -23,10 +24,14 @@ func InitializeApp(secret string) (*App, error) {
 	jwtToken := ProvideJWT(secret)
 	authService := ProvideAuthService(userRepository, refreshTokenRepository, jwtToken)
 	authController := ProvideAuthController(authService)
+	userService := ProvideUserService(userRepository)
+	userController := ProvideUserController(userService)
 	app := &App{
 		Mongo:    client,
 		Enforcer: enforcer,
 		AuthCtrl: authController,
+		UserCtrl: userController,
+		UserRepo: userRepository,
 	}
 	return app, nil
 }
@@ -37,4 +42,6 @@ type App struct {
 	Mongo    *mongo.Client
 	Enforcer *casbin.Enforcer
 	AuthCtrl controller.AuthController
+	UserCtrl controller.UserController
+	UserRepo repository.UserRepository
 }
