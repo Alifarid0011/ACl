@@ -6,8 +6,8 @@ import (
 )
 
 func RegisterUserRoutes(r *gin.Engine, app *wire.App) {
-	user_router := r.Group("/user")
+	userRouter := r.Group("/user")
 	{
-		print(user_router)
+		userRouter.POST("/create")
 	}
 }

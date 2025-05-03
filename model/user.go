@@ -9,8 +9,9 @@ type User struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	UID       string             `bson:"uid" json:"uid"`
 	Username  string             `bson:"username" json:"username"`
+	FullName  string             `bson:"full_name" json:"full_name"`
 	Email     string             `bson:"email" json:"email"`
-	Password  string             `bson:"password,omitempty" json:"-"`
+	Password  []byte             `bson:"password,omitempty" json:"-"`
 	Roles     []string           `bson:"roles" json:"roles"`
 	IsActive  bool               `bson:"is_active" json:"is_active"`
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`

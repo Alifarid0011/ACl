@@ -2,6 +2,7 @@ package main
 
 import (
 	"acl-casbin/config"
+	_ "acl-casbin/docs"
 	"acl-casbin/router"
 	"acl-casbin/wire"
 	"fmt"

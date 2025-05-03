@@ -7,4 +7,6 @@ type UserRepository interface {
 	FindByUID(uid string) (*model.User, error)
 	Create(user *model.User) error
 	GetAll() ([]model.User, error)
+	Update(user *model.User) error // Add Update
+	Delete(user *model.User) error // Add Delete
 }

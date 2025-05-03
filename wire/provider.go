@@ -38,6 +38,10 @@ func ProvideAuthService(
 func ProvideAuthController(authService service.AuthService) controller.AuthController {
 	return controller.NewAuthController(authService)
 }
+
+func ProvideUserController(userService service.UserService) controller.UserController {
+	return controller.NewUserController(userService)
+}
 func ProvideRefreshTokenRepository(db *mongo.Database) repository.RefreshTokenRepository {
 	return repository.NewRefreshTokenRepository(db)
 }

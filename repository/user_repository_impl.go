@@ -17,6 +17,33 @@ func NewUserRepository(db *mongo.Database) UserRepository {
 		collection: db.Collection("users"),
 	}
 }
+func (r *UserRepositoryImpl) Delete(user *model.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	// Delete the user by UID
+	_, err := r.collection.DeleteOne(ctx, bson.M{"uid": user.UID})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *UserRepositoryImpl) Update(user *model.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	// Update the user by UID
+	_, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"uid": user.UID},
+		bson.M{
+			"$set": user, // Update all fields in the user object
+		},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (r *UserRepositoryImpl) FindByUsername(username string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
