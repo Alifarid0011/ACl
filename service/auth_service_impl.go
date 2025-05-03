@@ -2,7 +2,6 @@ package service
 
 import (
 	"acl-casbin/config"
-	"acl-casbin/constant"
 	"acl-casbin/dto"
 	"acl-casbin/repository"
 	"acl-casbin/utils"
@@ -36,9 +35,9 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest) (dto.LoginResponse, error)
 	if err := utils.CompareHashAndPassword(user.Password, []byte(req.Password)); err != nil {
 		return dto.LoginResponse{}, errors.New("invalid credentials")
 	}
-	if !s.hasRole(user.Roles, constant.RoleSuperAdmin) {
-		return dto.LoginResponse{}, errors.New("unauthorized")
-	}
+	//if !s.hasRole(user.Roles, constant.RoleSuperAdmin) {
+	//	return dto.LoginResponse{}, errors.New("unauthorized")
+	//}
 	accessToken, err := s.tokenManager.GenerateAccessToken(time.Now().Add(config.Get.Token.ExpiryAccessToken*time.Minute).Unix(), user.UID, user.Roles)
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", err)

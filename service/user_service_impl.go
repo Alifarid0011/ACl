@@ -64,6 +64,7 @@ func (s *UserServiceImpl) CreateUser(req dto.CreateUserRequest) (*dto.UserRespon
 		Username:  req.Username,
 		Email:     req.Email,
 		Password:  hashedPassword,
+		Mobile:    req.Mobile,
 		FullName:  req.FullName,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -98,9 +99,11 @@ func (s *UserServiceImpl) Me(userID string) (*dto.UserResponse, error) {
 
 func mapToUserResponse(u *model.User) *dto.UserResponse {
 	return &dto.UserResponse{
-		UID:      u.UID,
-		Username: u.Username,
-		Email:    u.Email,
-		FullName: u.FullName,
+		UID:       u.UID,
+		Username:  u.Username,
+		Email:     u.Email,
+		FullName:  u.FullName,
+		Mobile:    u.Mobile,
+		CreatedAt: u.CreatedAt,
 	}
 }

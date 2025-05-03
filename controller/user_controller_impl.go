@@ -3,7 +3,9 @@ package controller
 import (
 	"acl-casbin/dto"
 	"acl-casbin/service"
+	"acl-casbin/utils"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type userControllerImpl struct {
@@ -69,10 +71,12 @@ func (u userControllerImpl) FindByUID(ctx *gin.Context) {
 func (u userControllerImpl) Create(ctx *gin.Context) {
 	var req dto.CreateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid request"})
+		errors := utils.GetValidationErrors(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"errors": errors,
+		})
 		return
 	}
-
 	userResponse, err := u.userService.CreateUser(req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to create user"})
