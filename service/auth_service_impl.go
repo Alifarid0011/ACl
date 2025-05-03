@@ -38,22 +38,26 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest) (dto.LoginResponse, error)
 	//if !s.hasRole(user.Roles, constant.RoleSuperAdmin) {
 	//	return dto.LoginResponse{}, errors.New("unauthorized")
 	//}
-	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(time.Now().Add(config.Get.Token.ExpiryAccessToken*time.Minute).Unix(), user.UID, user.Roles)
+	accessTokenExpired := time.Now().Add(config.Get.Token.ExpiryAccessToken * time.Minute)
+	refreshTokenExpired := time.Now().Add(config.Get.Token.ExpiryRefreshToken * time.Minute)
+	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), user.UID, user.Roles)
 	if errGenerateAccessToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", errGenerateAccessToken)
 	}
-	refreshToken, errGenerateRefreshToken := s.tokenManager.GenerateRefreshToken(time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute).Unix(), user.UID)
+	refreshToken, errGenerateRefreshToken := s.tokenManager.GenerateRefreshToken(refreshTokenExpired.Unix(), user.UID)
 	if errGenerateRefreshToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("refresh token generation failed: %w", errGenerateRefreshToken)
 	}
 	// ذخیره refresh token در Mongo
-	if errRefreshRepo := s.refreshRepo.Store(user.UID, refreshToken, time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute)); errRefreshRepo != nil {
+	if errRefreshRepo := s.refreshRepo.Store(user.UID, refreshToken, refreshTokenExpired); errRefreshRepo != nil {
 		return dto.LoginResponse{}, fmt.Errorf("storing refresh token failed: %w", errRefreshRepo)
 	}
 	return dto.LoginResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		UserID:       user.UID,
+		AccessToken:         accessToken,
+		RefreshToken:        refreshToken,
+		UserID:              user.UID,
+		AccessTokenExpired:  accessTokenExpired.Unix(),
+		RefreshTokenExpired: refreshTokenExpired.Unix(),
 	}, nil
 }
 func (s *AuthServiceImpl) hasRole(roles []string, target string) bool {
