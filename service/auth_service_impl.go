@@ -32,23 +32,23 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest) (dto.LoginResponse, error)
 	if err != nil {
 		return dto.LoginResponse{}, fmt.Errorf("user not found: %w", err)
 	}
-	if err := utils.CompareHashAndPassword(user.Password, []byte(req.Password)); err != nil {
+	if errCompareHashAndPassword := utils.CompareHashAndPassword(user.Password, []byte(req.Password)); errCompareHashAndPassword != nil {
 		return dto.LoginResponse{}, errors.New("invalid credentials")
 	}
 	//if !s.hasRole(user.Roles, constant.RoleSuperAdmin) {
 	//	return dto.LoginResponse{}, errors.New("unauthorized")
 	//}
-	accessToken, err := s.tokenManager.GenerateAccessToken(time.Now().Add(config.Get.Token.ExpiryAccessToken*time.Minute).Unix(), user.UID, user.Roles)
-	if err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", err)
+	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(time.Now().Add(config.Get.Token.ExpiryAccessToken*time.Minute).Unix(), user.UID, user.Roles)
+	if errGenerateAccessToken != nil {
+		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", errGenerateAccessToken)
 	}
-	refreshToken, err := s.tokenManager.GenerateRefreshToken(time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute).Unix(), user.UID)
-	if err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("refresh token generation failed: %w", err)
+	refreshToken, errGenerateRefreshToken := s.tokenManager.GenerateRefreshToken(time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute).Unix(), user.UID)
+	if errGenerateRefreshToken != nil {
+		return dto.LoginResponse{}, fmt.Errorf("refresh token generation failed: %w", errGenerateRefreshToken)
 	}
 	// ذخیره refresh token در Mongo
-	if err := s.refreshRepo.Store(user.UID, refreshToken, time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute)); err != nil {
-		return dto.LoginResponse{}, fmt.Errorf("storing refresh token failed: %w", err)
+	if errRefreshRepo := s.refreshRepo.Store(user.UID, refreshToken, time.Now().Add(config.Get.Token.ExpiryRefreshToken*time.Minute)); errRefreshRepo != nil {
+		return dto.LoginResponse{}, fmt.Errorf("storing refresh token failed: %w", errRefreshRepo)
 	}
 	return dto.LoginResponse{
 		AccessToken:  accessToken,
