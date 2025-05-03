@@ -6,6 +6,7 @@ import (
 	"acl-casbin/repository"
 	"acl-casbin/utils"
 	"errors"
+	"time"
 )
 
 type UserServiceImpl struct {
@@ -59,11 +60,13 @@ func (s *UserServiceImpl) CreateUser(req dto.CreateUserRequest) (*dto.UserRespon
 		return nil, err
 	}
 	user := &model.User{
-		UID:      utils.GenerateUID(),
-		Username: req.Username,
-		Email:    req.Email,
-		Password: hashedPassword,
-		FullName: req.FullName,
+		UID:       utils.GenerateUID(),
+		Username:  req.Username,
+		Email:     req.Email,
+		Password:  hashedPassword,
+		FullName:  req.FullName,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	if errCreate := s.userRepo.Create(user); errCreate != nil {
 		return nil, errCreate

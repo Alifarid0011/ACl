@@ -5,6 +5,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -92,4 +93,21 @@ func (r *UserRepositoryImpl) GetAll() ([]model.User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+func (r *UserRepositoryImpl) EnsureIndexes() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	indexes := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "username", Value: 1}}, Options: options.Index().SetName("idx_username")},
+		{Keys: bson.D{{Key: "email", Value: 1}}, Options: options.Index().SetName("idx_email")},
+		{Keys: bson.D{{Key: "mobile", Value: 1}}, Options: options.Index().SetName("idx_mobile")},
+		{Keys: bson.D{{Key: "full_name", Value: 1}}, Options: options.Index().SetName("idx_full_name")},
+		{Keys: bson.D{{Key: "created_at", Value: 1}}, Options: options.Index().SetName("idx_created_at")},
+		{Keys: bson.D{{Key: "updated_at", Value: 1}}, Options: options.Index().SetName("idx_updated_at")},
+		{Keys: bson.D{{Key: "uid", Value: 1}}, Options: options.Index().SetName("uid_unique").SetUnique(true)},
+	}
+
+	_, err := r.collection.Indexes().CreateMany(ctx, indexes)
+	return err
 }

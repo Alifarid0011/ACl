@@ -9,4 +9,5 @@ type UserRepository interface {
 	GetAll() ([]model.User, error)
 	Update(user *model.User) error // Add Update
 	Delete(user *model.User) error // Add Delete
+	EnsureIndexes() error
 }

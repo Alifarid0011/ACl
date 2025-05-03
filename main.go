@@ -15,6 +15,9 @@ func init() {
 }
 func main() {
 	app, err := wire.InitializeApp(config.Get.Token.SecretKey)
+	if err := app.UserRepo.EnsureIndexes(); err != nil {
+		log.Fatalf("Failed to create indexes: %v", err)
+	}
 	if err != nil {
 		log.Fatalf("Failed to initialize app: %v", err)
 	}
