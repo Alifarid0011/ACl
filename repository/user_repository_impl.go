@@ -73,7 +73,6 @@ func (r *UserRepositoryImpl) FindByUID(uid string) (*model.User, error) {
 func (r *UserRepositoryImpl) Create(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
@@ -97,7 +96,6 @@ func (r *UserRepositoryImpl) GetAll() ([]model.User, error) {
 func (r *UserRepositoryImpl) EnsureIndexes() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
 	indexes := []mongo.IndexModel{
 		{Keys: bson.D{{Key: "username", Value: 1}}, Options: options.Index().SetName("idx_username")},
 		{Keys: bson.D{{Key: "email", Value: 1}}, Options: options.Index().SetName("idx_email")},
@@ -107,7 +105,6 @@ func (r *UserRepositoryImpl) EnsureIndexes() error {
 		{Keys: bson.D{{Key: "updated_at", Value: 1}}, Options: options.Index().SetName("idx_updated_at")},
 		{Keys: bson.D{{Key: "uid", Value: 1}}, Options: options.Index().SetName("uid_unique").SetUnique(true)},
 	}
-
 	_, err := r.collection.Indexes().CreateMany(ctx, indexes)
 	return err
 }
