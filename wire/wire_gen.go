@@ -27,11 +27,12 @@ func InitializeApp(secret string) (*App, error) {
 	userService := ProvideUserService(userRepository)
 	userController := ProvideUserController(userService)
 	app := &App{
-		Mongo:    client,
-		Enforcer: enforcer,
-		AuthCtrl: authController,
-		UserCtrl: userController,
-		UserRepo: userRepository,
+		Mongo:            client,
+		Enforcer:         enforcer,
+		AuthCtrl:         authController,
+		UserCtrl:         userController,
+		UserRepo:         userRepository,
+		RefreshTokenRepo: refreshTokenRepository,
 	}
 	return app, nil
 }
@@ -39,9 +40,10 @@ func InitializeApp(secret string) (*App, error) {
 // wire.go:
 
 type App struct {
-	Mongo    *mongo.Client
-	Enforcer *casbin.Enforcer
-	AuthCtrl controller.AuthController
-	UserCtrl controller.UserController
-	UserRepo repository.UserRepository
+	Mongo            *mongo.Client
+	Enforcer         *casbin.Enforcer
+	AuthCtrl         controller.AuthController
+	RefreshTokenRepo repository.RefreshTokenRepository
+	UserCtrl         controller.UserController
+	UserRepo         repository.UserRepository
 }

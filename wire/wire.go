@@ -12,11 +12,12 @@ import (
 )
 
 type App struct {
-	Mongo    *mongo.Client
-	Enforcer *casbin.Enforcer
-	AuthCtrl controller.AuthController
-	UserCtrl controller.UserController
-	UserRepo repository.UserRepository
+	Mongo            *mongo.Client
+	Enforcer         *casbin.Enforcer
+	AuthCtrl         controller.AuthController
+	RefreshTokenRepo repository.RefreshTokenRepository
+	UserCtrl         controller.UserController
+	UserRepo         repository.UserRepository
 }
 
 func InitializeApp(secret string) (*App, error) {
@@ -31,7 +32,7 @@ func InitializeApp(secret string) (*App, error) {
 		ProvideAuthController,
 		ProvideUserService,
 		ProvideUserController,
-		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo"),
+		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo"),
 	)
 	return &App{}, nil
 }
