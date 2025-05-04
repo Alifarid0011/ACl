@@ -10,16 +10,6 @@ import (
 	"time"
 )
 
-package repository
-
-import (
-"context"
-"go.mongodb.org/mongo-driver/bson"
-"go.mongodb.org/mongo-driver/mongo"
-"time"
-"your_project/model"
-)
-
 type ApprovalMongoRepository struct {
 	collection *mongo.Collection
 }
@@ -30,8 +20,8 @@ func NewApprovalMongoRepository(collection *mongo.Collection) ApprovalRepository
 
 func (r *ApprovalMongoRepository) ApplyDecisionWithLogic(ctx context.Context, objectID, objectType string, stepID int, decision model.ApprovalDecision) error {
 	filter := bson.M{
-		"object_id":   objectID,
-		"object_type": objectType,
+		"object_id":     objectID,
+		"object_type":   objectType,
 		"steps.step_id": stepID,
 	}
 
@@ -59,8 +49,8 @@ func (r *ApprovalMongoRepository) ApplyDecisionWithLogic(ctx context.Context, ob
 
 	// بروزرسانی وضعیت مرحله در فلو
 	_, err := r.collection.UpdateOne(ctx, bson.M{
-		"object_id":   objectID,
-		"object_type": objectType,
+		"object_id":     objectID,
+		"object_type":   objectType,
 		"steps.step_id": stepID,
 	}, bson.M{
 		"$set": bson.M{
@@ -141,8 +131,8 @@ func (r *ApprovalMongoRepository) UpdateFlow(ctx context.Context, flow *model.Ap
 
 	update := bson.M{
 		"$set": bson.M{
-			"steps":     flow.Steps,
-			"status":    flow.Status,
+			"steps":      flow.Steps,
+			"status":     flow.Status,
 			"updated_at": time.Now(),
 		},
 	}
