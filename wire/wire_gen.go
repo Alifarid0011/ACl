@@ -26,6 +26,9 @@ func InitializeApp(secret string) (*App, error) {
 	authController := ProvideAuthController(authService)
 	userService := ProvideUserService(userRepository)
 	userController := ProvideUserController(userService)
+	approvalRepository := ProviderApprovalRepository(database)
+	approvalService := ProviderApprovalService(approvalRepository)
+	approvalController := ProviderApprovalController(approvalService)
 	app := &App{
 		Mongo:            client,
 		Enforcer:         enforcer,
@@ -33,6 +36,8 @@ func InitializeApp(secret string) (*App, error) {
 		UserCtrl:         userController,
 		UserRepo:         userRepository,
 		RefreshTokenRepo: refreshTokenRepository,
+		ApproveCtrl:      approvalController,
+		ApproveRepo:      approvalRepository,
 	}
 	return app, nil
 }
@@ -46,4 +51,6 @@ type App struct {
 	RefreshTokenRepo repository.RefreshTokenRepository
 	UserCtrl         controller.UserController
 	UserRepo         repository.UserRepository
+	ApproveCtrl      controller.ApprovalController
+	ApproveRepo      repository.ApprovalRepository
 }

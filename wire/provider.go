@@ -46,6 +46,15 @@ func ProvideUserService(userRepo repository.UserRepository) service.UserService 
 func ProvideUserController(userService service.UserService) controller.UserController {
 	return controller.NewUserController(userService)
 }
+func ProviderApprovalService(approvalRepo repository.ApprovalRepository) service.ApprovalService {
+	return service.NewApprovalService(approvalRepo)
+}
+func ProviderApprovalController(approvalService service.ApprovalService) controller.ApprovalController {
+	return controller.NewApprovalController(approvalService)
+}
+func ProviderApprovalRepository(db *mongo.Database) repository.ApprovalRepository {
+	return repository.NewApprovalMongoRepository(db)
+}
 func ProvideRefreshTokenRepository(db *mongo.Database) repository.RefreshTokenRepository {
 	return repository.NewRefreshTokenRepository(db)
 }

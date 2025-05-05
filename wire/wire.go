@@ -18,6 +18,8 @@ type App struct {
 	RefreshTokenRepo repository.RefreshTokenRepository
 	UserCtrl         controller.UserController
 	UserRepo         repository.UserRepository
+	ApproveCtrl      controller.ApprovalController
+	ApproveRepo      repository.ApprovalRepository
 }
 
 func InitializeApp(secret string) (*App, error) {
@@ -30,9 +32,12 @@ func InitializeApp(secret string) (*App, error) {
 		ProvideDatabase,
 		ProvideAuthService,
 		ProvideAuthController,
+		ProviderApprovalService,
+		ProviderApprovalController,
+		ProviderApprovalRepository,
 		ProvideUserService,
 		ProvideUserController,
-		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo"),
+		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo", "ApproveCtrl", "ApproveRepo"),
 	)
 	return &App{}, nil
 }
