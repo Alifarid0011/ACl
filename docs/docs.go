@@ -15,6 +15,277 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/approval/apply-decision": {
+            "post": {
+                "description": "Apply a decision to a step in an approval flow",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval"
+                ],
+                "summary": "Apply approval decision",
+                "parameters": [
+                    {
+                        "description": "Apply Decision Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApplyDecisionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/approval/create-flow": {
+            "post": {
+                "description": "Create an approval flow for a specific object",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval"
+                ],
+                "summary": "Create a new approval flow",
+                "parameters": [
+                    {
+                        "description": "Create Flow Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateFlowRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/approval/flow/{object_type}/{object_id}": {
+            "get": {
+                "description": "Retrieve a flow using object type and object ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval"
+                ],
+                "summary": "Get approval flow by object ID and type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Object Type",
+                        "name": "object_type",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Object ID",
+                        "name": "object_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ApprovalFlow"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/approval/list": {
+            "get": {
+                "description": "List all approval flows filtered by object type and status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval"
+                ],
+                "summary": "List approval flows",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Object Type",
+                        "name": "object_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Flow Status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ApprovalFlow"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/approval/update-step": {
+            "post": {
+                "description": "Update the status of a step in the approval flow",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Approval"
+                ],
+                "summary": "Update step status",
+                "parameters": [
+                    {
+                        "description": "Update Step Status Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateStepStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Takes username and password, returns access and refresh token",
@@ -326,10 +597,119 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.ApplyDecisionRequest": {
+            "type": "object",
+            "properties": {
+                "decision": {
+                    "$ref": "#/definitions/dto.ApprovalDecisionDTO"
+                },
+                "object_id": {
+                    "type": "string"
+                },
+                "object_type": {
+                    "type": "string"
+                },
+                "step_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ApprovalDecisionDTO": {
+            "type": "object",
+            "required": [
+                "action",
+                "at",
+                "by"
+            ],
+            "properties": {
+                "action": {
+                    "description": "1: Approve, 2: Reject",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "at": {
+                    "type": "string"
+                },
+                "by": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ApprovalStepInput": {
+            "type": "object",
+            "required": [
+                "assignees",
+                "name",
+                "required",
+                "step_id"
+            ],
+            "properties": {
+                "assignees": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dependencies": {
+                    "description": "ولیدیشن اختیاری",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StepDependency"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "step_id": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "dto.CreateFlowRequest": {
+            "type": "object",
+            "required": [
+                "final_step_id",
+                "object_id",
+                "object_type",
+                "steps"
+            ],
+            "properties": {
+                "final_step_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "object_id": {
+                    "type": "string"
+                },
+                "object_type": {
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/dto.ApprovalStepInput"
+                    }
+                }
+            }
+        },
         "dto.CreateUserRequest": {
             "type": "object",
             "required": [
                 "email",
+                "mobile",
                 "password",
                 "username"
             ],
@@ -338,13 +718,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "full_name": {
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "mobile": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
                 }
             }
         },
@@ -377,8 +765,14 @@ const docTemplate = `{
                 "access_token": {
                     "type": "string"
                 },
+                "access_token_expired": {
+                    "type": "integer"
+                },
                 "refresh_token": {
                     "type": "string"
+                },
+                "refresh_token_expired": {
+                    "type": "integer"
                 },
                 "user_id": {
                     "type": "string"
@@ -390,6 +784,36 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.UpdateStepStatusRequest": {
+            "type": "object",
+            "required": [
+                "object_id",
+                "object_type",
+                "status",
+                "step_id"
+            ],
+            "properties": {
+                "object_id": {
+                    "type": "string"
+                },
+                "object_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Pending, Approved, Rejected",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "step_id": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -416,10 +840,128 @@ const docTemplate = `{
                 "full_name": {
                     "type": "string"
                 },
+                "mobile": {
+                    "type": "string"
+                },
                 "uid": {
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ApprovalDecision": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "1: Approve, 2: Reject",
+                    "type": "integer"
+                },
+                "at": {
+                    "description": "زمان تصمیم",
+                    "type": "string"
+                },
+                "by": {
+                    "description": "user_id تصمیم‌گیرنده",
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ApprovalFlow": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "finalStepID": {
+                    "description": "شماره مرحله نهایی",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "objectID": {
+                    "description": "شناسه آبجکت اصلی (مثلاً فاکتور، مرخصی)",
+                    "type": "string"
+                },
+                "objectType": {
+                    "description": "نوع آبجکت",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "0: Pending, 1: Approved, 2: Rejected",
+                    "type": "integer"
+                },
+                "steps": {
+                    "description": "لیست مراحل اپروال",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ApprovalStep"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ApprovalStep": {
+            "type": "object",
+            "properties": {
+                "assignees": {
+                    "description": "شناسه کاربران مجاز به تصمیم‌گیری",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "decisions": {
+                    "description": "لیست تصمیمات گرفته‌شده",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ApprovalDecision"
+                    }
+                },
+                "dependencies": {
+                    "description": "وابستگی به مراحل دیگر",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StepDependency"
+                    }
+                },
+                "name": {
+                    "description": "نام مرحله",
+                    "type": "string"
+                },
+                "required": {
+                    "description": "حداقل تصمیم مثبت موردنیاز",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "0: Pending, 1: Approved, 2: Rejected",
+                    "type": "integer"
+                },
+                "stepID": {
+                    "description": "شماره مرحله",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.StepDependency": {
+            "type": "object",
+            "properties": {
+                "targets": {
+                    "description": "لیست شماره مراحل وابسته (همه الزامی هستند)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "type": {
+                    "description": "نوع وابستگی: step, group, role",
                     "type": "string"
                 }
             }

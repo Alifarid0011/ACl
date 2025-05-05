@@ -1,16 +1,100 @@
 definitions:
+  dto.ApplyDecisionRequest:
+    properties:
+      decision:
+        $ref: '#/definitions/dto.ApprovalDecisionDTO'
+      object_id:
+        type: string
+      object_type:
+        type: string
+      step_id:
+        type: integer
+    type: object
+  dto.ApprovalDecisionDTO:
+    properties:
+      action:
+        description: '1: Approve, 2: Reject'
+        enum:
+        - 1
+        - 2
+        type: integer
+      at:
+        type: string
+      by:
+        type: string
+      comment:
+        type: string
+    required:
+    - action
+    - at
+    - by
+    type: object
+  dto.ApprovalStepInput:
+    properties:
+      assignees:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      dependencies:
+        description: ولیدیشن اختیاری
+        items:
+          $ref: '#/definitions/model.StepDependency'
+        type: array
+      name:
+        type: string
+      required:
+        minimum: 1
+        type: integer
+      step_id:
+        minimum: 1
+        type: integer
+    required:
+    - assignees
+    - name
+    - required
+    - step_id
+    type: object
+  dto.CreateFlowRequest:
+    properties:
+      final_step_id:
+        minimum: 1
+        type: integer
+      object_id:
+        type: string
+      object_type:
+        type: string
+      steps:
+        items:
+          $ref: '#/definitions/dto.ApprovalStepInput'
+        minItems: 1
+        type: array
+    required:
+    - final_step_id
+    - object_id
+    - object_type
+    - steps
+    type: object
   dto.CreateUserRequest:
     properties:
       email:
         type: string
       full_name:
+        maxLength: 100
+        type: string
+      mobile:
         type: string
       password:
+        maxLength: 100
+        minLength: 6
         type: string
       username:
+        maxLength: 50
+        minLength: 3
         type: string
     required:
     - email
+    - mobile
     - password
     - username
     type: object
@@ -33,8 +117,12 @@ definitions:
     properties:
       access_token:
         type: string
+      access_token_expired:
+        type: integer
       refresh_token:
         type: string
+      refresh_token_expired:
+        type: integer
       user_id:
         type: string
     type: object
@@ -42,6 +130,28 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  dto.UpdateStepStatusRequest:
+    properties:
+      object_id:
+        type: string
+      object_type:
+        type: string
+      status:
+        description: Pending, Approved, Rejected
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+      step_id:
+        minimum: 1
+        type: integer
+    required:
+    - object_id
+    - object_type
+    - status
+    - step_id
     type: object
   dto.UpdateUserRequest:
     properties:
@@ -58,14 +168,275 @@ definitions:
         type: string
       full_name:
         type: string
+      mobile:
+        type: string
       uid:
         type: string
       username:
         type: string
     type: object
+  model.ApprovalDecision:
+    properties:
+      action:
+        description: '1: Approve, 2: Reject'
+        type: integer
+      at:
+        description: زمان تصمیم
+        type: string
+      by:
+        description: user_id تصمیم‌گیرنده
+        type: string
+      comment:
+        type: string
+    type: object
+  model.ApprovalFlow:
+    properties:
+      createdAt:
+        type: string
+      finalStepID:
+        description: شماره مرحله نهایی
+        type: integer
+      id:
+        type: string
+      objectID:
+        description: شناسه آبجکت اصلی (مثلاً فاکتور، مرخصی)
+        type: string
+      objectType:
+        description: نوع آبجکت
+        type: string
+      status:
+        description: '0: Pending, 1: Approved, 2: Rejected'
+        type: integer
+      steps:
+        description: لیست مراحل اپروال
+        items:
+          $ref: '#/definitions/model.ApprovalStep'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  model.ApprovalStep:
+    properties:
+      assignees:
+        description: شناسه کاربران مجاز به تصمیم‌گیری
+        items:
+          type: string
+        type: array
+      decisions:
+        description: لیست تصمیمات گرفته‌شده
+        items:
+          $ref: '#/definitions/model.ApprovalDecision'
+        type: array
+      dependencies:
+        description: وابستگی به مراحل دیگر
+        items:
+          $ref: '#/definitions/model.StepDependency'
+        type: array
+      name:
+        description: نام مرحله
+        type: string
+      required:
+        description: حداقل تصمیم مثبت موردنیاز
+        type: integer
+      status:
+        description: '0: Pending, 1: Approved, 2: Rejected'
+        type: integer
+      stepID:
+        description: شماره مرحله
+        type: integer
+    type: object
+  model.StepDependency:
+    properties:
+      targets:
+        description: لیست شماره مراحل وابسته (همه الزامی هستند)
+        items:
+          type: integer
+        type: array
+      type:
+        description: 'نوع وابستگی: step, group, role'
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /approval/apply-decision:
+    post:
+      consumes:
+      - application/json
+      description: Apply a decision to a step in an approval flow
+      parameters:
+      - description: Apply Decision Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ApplyDecisionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Apply approval decision
+      tags:
+      - Approval
+  /approval/create-flow:
+    post:
+      consumes:
+      - application/json
+      description: Create an approval flow for a specific object
+      parameters:
+      - description: Create Flow Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateFlowRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new approval flow
+      tags:
+      - Approval
+  /approval/flow/{object_type}/{object_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a flow using object type and object ID
+      parameters:
+      - description: Object Type
+        in: path
+        name: object_type
+        required: true
+        type: string
+      - description: Object ID
+        in: path
+        name: object_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ApprovalFlow'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get approval flow by object ID and type
+      tags:
+      - Approval
+  /approval/list:
+    get:
+      consumes:
+      - application/json
+      description: List all approval flows filtered by object type and status
+      parameters:
+      - description: Object Type
+        in: query
+        name: object_type
+        type: string
+      - description: Flow Status
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ApprovalFlow'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List approval flows
+      tags:
+      - Approval
+  /approval/update-step:
+    post:
+      consumes:
+      - application/json
+      description: Update the status of a step in the approval flow
+      parameters:
+      - description: Update Step Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateStepStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update step status
+      tags:
+      - Approval
   /auth/login:
     post:
       consumes:
