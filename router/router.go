@@ -7,9 +7,10 @@ import (
 
 func SetupRouter(app *wire.App) *gin.Engine {
 	r := gin.Default()
-	RegisterAuthRoutes(r, app)
 	RegisterSwaggerRoutes(r)
+	RegisterAuthRoutes(r, app)
 	RegisterUserRoutes(r, app)
+	RegisterApproveRoutes(r, app)
 	// RegisterAclRoutes(r, app)
 
 	return r
