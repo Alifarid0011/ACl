@@ -13,5 +13,6 @@ type JwtToken interface {
 type CustomClaims struct {
 	UID       string             `json:"uid"`
 	TokenType constant.TokenType `json:"type"`
+	Roles     []string           `json:"roles"`
 	jwt.RegisteredClaims
 }

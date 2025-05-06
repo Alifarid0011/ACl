@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"acl-casbin/constant"
 	"acl-casbin/dto"
 	"acl-casbin/service"
+	"acl-casbin/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,11 +32,23 @@ func (c *authControllerImpl) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	resp, err := c.authService.Login(req)
+	UserAgentInfo, _ := ctx.Get(constant.UserAgentInfo)
+	resp, err := c.authService.Login(req, UserAgentInfo.(*utils.UserAgent))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, resp)
+}
+
+func (c *authControllerImpl) Logout(ctx *gin.Context) {
+
+}
+func (c *authControllerImpl) Register(ctx *gin.Context) {
+
+}
+
+func (c *authControllerImpl) UseRefreshToken(ctx *gin.Context) {
+
 }

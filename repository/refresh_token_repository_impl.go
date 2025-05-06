@@ -2,6 +2,7 @@ package repository
 
 import (
 	"acl-casbin/model"
+	"acl-casbin/utils"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -20,12 +21,15 @@ func NewRefreshTokenRepository(db *mongo.Database) RefreshTokenRepository {
 	}
 }
 
-func (r *refreshTokenRepositoryImpl) Store(uid, token string, expiresAt time.Time) error {
+func (r *refreshTokenRepositoryImpl) Store(userUid, refreshToken, accessToken string, countOfUsage int, userAgent *utils.UserAgent, creationTime, expiresAt time.Time) error {
 	rt := model.RefreshToken{
-		Token:     token,
-		UID:       uid,
-		ExpiresAt: expiresAt.UTC(),
-		CreatedAt: time.Now().UTC(),
+		RefreshToken:    refreshToken,
+		AccessToken:     accessToken,
+		UserUid:         userUid,
+		UserAgent:       userAgent,
+		ExpiresAt:       expiresAt.UTC(),
+		RefreshUseCount: countOfUsage,
+		CreatedAt:       creationTime.UTC(),
 	}
 	_, err := r.collection.InsertOne(context.Background(), rt)
 	return err
