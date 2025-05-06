@@ -9,9 +9,10 @@ import (
 
 type RefreshTokenRepository interface {
 	Store(uid primitive.ObjectID, refreshToken string, accessToken string, countOfUsage int, userAgent *utils.UserAgent, creationTime, expiresAt time.Time) error
-	FindByToken(token string) (*model.RefreshToken, error)
+	FindByRefreshToken(token string) (*model.RefreshToken, error)
 	DeleteByUID(uid string) error
 	EnsureIndexes() error
-	DeleteByToken(token string) error
-	FindByTokenWithUser(token string) (*model.RefreshTokenWithUser, error)
+	FindByAccessToken(token string) (*model.RefreshToken, error)
+	DeleteByRefreshToken(token string) error
+	FindByRefreshTokenWithUser(token string) (*model.RefreshTokenWithUser, error)
 }

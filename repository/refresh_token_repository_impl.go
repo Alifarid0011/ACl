@@ -36,9 +36,17 @@ func (r *refreshTokenRepositoryImpl) Store(userUid primitive.ObjectID, refreshTo
 	_, err := r.collection.InsertOne(context.Background(), rt)
 	return err
 }
-func (r *refreshTokenRepositoryImpl) FindByToken(token string) (*model.RefreshToken, error) {
+func (r *refreshTokenRepositoryImpl) FindByRefreshToken(token string) (*model.RefreshToken, error) {
 	var result model.RefreshToken
 	err := r.collection.FindOne(context.Background(), bson.M{constant.RefreshTokenType: token}).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+func (r *refreshTokenRepositoryImpl) FindByAccessToken(token string) (*model.RefreshToken, error) {
+	var result model.RefreshToken
+	err := r.collection.FindOne(context.Background(), bson.M{constant.AccessTokenType: token}).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
@@ -50,11 +58,11 @@ func (r *refreshTokenRepositoryImpl) DeleteByUID(uid string) error {
 	return err
 }
 
-func (r *refreshTokenRepositoryImpl) DeleteByToken(token string) error {
+func (r *refreshTokenRepositoryImpl) DeleteByRefreshToken(token string) error {
 	_, err := r.collection.DeleteMany(context.Background(), bson.M{constant.RefreshTokenType: token})
 	return err
 }
-func (r *refreshTokenRepositoryImpl) FindByTokenWithUser(token string) (*model.RefreshTokenWithUser, error) {
+func (r *refreshTokenRepositoryImpl) FindByRefreshTokenWithUser(token string) (*model.RefreshTokenWithUser, error) {
 	pipeline := mongo.Pipeline{
 		{{Key: "$match", Value: bson.M{"token": token}}},
 		{{

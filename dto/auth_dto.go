@@ -17,3 +17,7 @@ type LoginResponse struct {
 type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token" validate:"required"`
 }
+
+type LogoutRequest struct {
+	AccessToken string `json:"access_token" validate:"required"`
+}
