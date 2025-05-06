@@ -42,4 +42,7 @@ func EnsureIndexes(app *wire.App) {
 	if err := app.RefreshTokenRepo.EnsureIndexes(); err != nil {
 		log.Fatalf("Failed to create indexes: %v", err)
 	}
+	if err := app.BlackListRepo.EnsureIndexes(); err != nil {
+		log.Fatalf("Failed to create indexes: %v", err)
+	}
 }

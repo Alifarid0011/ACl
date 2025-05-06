@@ -1,7 +1,9 @@
 package utils
 
-import "github.com/google/uuid"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-func GenerateUID() string {
-	return uuid.New().String()
+func GenerateUID() primitive.ObjectID {
+	return primitive.NewObjectID()
 }

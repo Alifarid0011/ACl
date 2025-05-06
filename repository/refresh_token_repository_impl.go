@@ -19,7 +19,7 @@ type refreshTokenRepositoryImpl struct {
 
 func NewRefreshTokenRepository(db *mongo.Database) RefreshTokenRepository {
 	return &refreshTokenRepositoryImpl{
-		collection: db.Collection("refresh_tokens"),
+		collection: db.Collection(constant.RefreshTokenCollection),
 	}
 }
 

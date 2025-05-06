@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type CreateUserRequest struct {
 	Username string `json:"username" validate:"required,unique_username,min=3,max=50"`
@@ -16,10 +19,10 @@ type UpdateUserRequest struct {
 }
 
 type UserResponse struct {
-	UID       string    `json:"uid"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	FullName  string    `json:"full_name"`
-	Mobile    string    `json:"mobile"`
-	CreatedAt time.Time `json:"created_at"`
+	UID       primitive.ObjectID `json:"uid"`
+	Username  string             `json:"username"`
+	Email     string             `json:"email"`
+	FullName  string             `json:"full_name"`
+	Mobile    string             `json:"mobile"`
+	CreatedAt time.Time          `json:"created_at"`
 }

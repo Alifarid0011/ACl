@@ -26,7 +26,6 @@ func ProvideCasbinEnforcer(mongoClient *mongo.Client) *casbin.Enforcer {
 func ProvideUserRepository(db *mongo.Database) repository.UserRepository {
 	return repository.NewUserRepository(db)
 }
-
 func ProvideAuthService(
 	userRepo repository.UserRepository,
 	refreshTokenRepo repository.RefreshTokenRepository,
@@ -54,6 +53,9 @@ func ProviderApprovalController(approvalService service.ApprovalService) control
 }
 func ProviderApprovalRepository(db *mongo.Database) repository.ApprovalRepository {
 	return repository.NewApprovalMongoRepository(db)
+}
+func ProviderBlackListRepository(db *mongo.Database) repository.BlackListTokenRepository {
+	return repository.NewBlackListRepository(db)
 }
 func ProvideRefreshTokenRepository(db *mongo.Database) repository.RefreshTokenRepository {
 	return repository.NewRefreshTokenRepository(db)

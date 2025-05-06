@@ -29,6 +29,7 @@ func InitializeApp(secret string) (*App, error) {
 	approvalRepository := ProviderApprovalRepository(database)
 	approvalService := ProviderApprovalService(approvalRepository)
 	approvalController := ProviderApprovalController(approvalService)
+	blackListTokenRepository := ProviderBlackListRepository(database)
 	app := &App{
 		Mongo:            client,
 		Enforcer:         enforcer,
@@ -38,6 +39,7 @@ func InitializeApp(secret string) (*App, error) {
 		RefreshTokenRepo: refreshTokenRepository,
 		ApproveCtrl:      approvalController,
 		ApproveRepo:      approvalRepository,
+		BlackListRepo:    blackListTokenRepository,
 	}
 	return app, nil
 }
@@ -53,4 +55,5 @@ type App struct {
 	UserRepo         repository.UserRepository
 	ApproveCtrl      controller.ApprovalController
 	ApproveRepo      repository.ApprovalRepository
+	BlackListRepo    repository.BlackListTokenRepository
 }
