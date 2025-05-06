@@ -4,6 +4,7 @@ import (
 	"acl-casbin/constant"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Jwt struct {
@@ -13,7 +14,7 @@ type Jwt struct {
 func NewJwtToken(secret string) JwtToken {
 	return &Jwt{secretKey: secret}
 }
-func (j *Jwt) GenerateAccessToken(Expiry int64, uid string, roles []string) (string, error) {
+func (j *Jwt) GenerateAccessToken(Expiry int64, uid primitive.ObjectID, roles []string) (string, error) {
 	claims := jwt.MapClaims{
 		"uid":   uid,
 		"roles": roles,
@@ -24,7 +25,7 @@ func (j *Jwt) GenerateAccessToken(Expiry int64, uid string, roles []string) (str
 	return token.SignedString([]byte(j.secretKey))
 }
 
-func (j *Jwt) GenerateRefreshToken(Expiry int64, uid string) (string, error) {
+func (j *Jwt) GenerateRefreshToken(Expiry int64, uid primitive.ObjectID) (string, error) {
 	claims := jwt.MapClaims{
 		"uid":  uid,
 		"exp":  Expiry,

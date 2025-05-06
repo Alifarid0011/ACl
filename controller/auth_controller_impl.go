@@ -38,7 +38,6 @@ func (c *authControllerImpl) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-
 	ctx.JSON(http.StatusOK, resp)
 }
 
@@ -50,5 +49,16 @@ func (c *authControllerImpl) Register(ctx *gin.Context) {
 }
 
 func (c *authControllerImpl) UseRefreshToken(ctx *gin.Context) {
-
+	var req dto.RefreshRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	UserAgentInfo, _ := ctx.Get(constant.UserAgentInfo)
+	resp, err := c.authService.UseRefreshToken(req, UserAgentInfo.(*utils.UserAgent))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }

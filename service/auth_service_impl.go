@@ -60,29 +60,36 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest, userAgent *utils.UserAgent
 		RefreshTokenExpired: refreshTokenExpired.Unix(),
 	}, nil
 }
-func (s *AuthServiceImpl) UseRefreshToken(req dto.RefreshRequest) (dto.LoginResponse, error) {
-	token, err := s.tokenManager.ParseToken(req.RefreshToken)
-	if err != nil {
-		return dto.LoginResponse{}, err
-	}
-	refreshToken, errRefreshRepo := s.refreshRepo.FindByToken(req.RefreshToken)
+func (s *AuthServiceImpl) UseRefreshToken(req dto.RefreshRequest, userAgent *utils.UserAgent) (dto.LoginResponse, error) {
+	OldRefreshToken, errRefreshRepo := s.refreshRepo.FindByTokenWithUser(req.RefreshToken)
 	if errRefreshRepo != nil {
 		return dto.LoginResponse{}, fmt.Errorf("refresh token not found: %w", errRefreshRepo)
 	}
 	accessTokenExpired := time.Now().Add(config.Get.Token.ExpiryAccessToken * time.Minute)
 	refreshTokenExpired := time.Now().Add(config.Get.Token.ExpiryRefreshToken * time.Minute)
-	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), user.UID, user.Roles)
+	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), OldRefreshToken.UserUid, OldRefreshToken.User.Roles)
 	if errGenerateAccessToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", errGenerateAccessToken)
 	}
-	refreshToken, errGenerateRefreshToken := s.tokenManager.GenerateRefreshToken(refreshTokenExpired.Unix(), user.UID)
+	NewRefreshTokenString, errGenerateRefreshToken := s.tokenManager.GenerateRefreshToken(refreshTokenExpired.Unix(), OldRefreshToken.User.UID)
 	if errGenerateRefreshToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("refresh token generation failed: %w", errGenerateRefreshToken)
 	}
-	// ذخیره refresh token در Mongo
-	if errRefreshRepo := s.refreshRepo.Store(user.UID, refreshToken, refreshTokenExpired); errRefreshRepo != nil {
-		return dto.LoginResponse{}, fmt.Errorf("storing refresh token failed: %w", errRefreshRepo)
+	if errRefreshRepoStore := s.refreshRepo.Store(OldRefreshToken.User.UID, NewRefreshTokenString, accessToken, OldRefreshToken.RefreshUseCount+1, userAgent, time.Now(), refreshTokenExpired); errRefreshRepoStore != nil {
+		return dto.LoginResponse{}, fmt.Errorf("storing refresh token failed: %w", errRefreshRepoStore)
+	} else {
+		errDeleteByToken := s.refreshRepo.DeleteByToken(OldRefreshToken.RefreshToken.RefreshToken)
+		if errDeleteByToken != nil {
+			return dto.LoginResponse{}, errDeleteByToken
+		}
 	}
+	return dto.LoginResponse{
+		AccessToken:         accessToken,
+		RefreshToken:        NewRefreshTokenString,
+		UserID:              OldRefreshToken.User.UID,
+		AccessTokenExpired:  accessTokenExpired.Unix(),
+		RefreshTokenExpired: refreshTokenExpired.Unix(),
+	}, nil
 }
 
 func (s *AuthServiceImpl) hasRole(roles []string, target string) bool {
