@@ -55,6 +55,24 @@ definitions:
     - required
     - step_id
     type: object
+  dto.CheckPermissionDTO:
+    properties:
+      act:
+        type: string
+      obj:
+        type: string
+      sub:
+        type: string
+      subject_collection:
+        enum:
+        - User
+        type: string
+    required:
+    - act
+    - obj
+    - sub
+    - subject_collection
+    type: object
   dto.CreateFlowRequest:
     properties:
       final_step_id:
@@ -104,6 +122,24 @@ definitions:
     properties:
       error:
         type: string
+    type: object
+  dto.GroupingDTO:
+    properties:
+      child:
+        description: یوزر یا منبع
+        type: string
+      parent:
+        description: نقش
+        type: string
+      type:
+        enum:
+        - g
+        - g2
+        type: string
+    required:
+    - child
+    - parent
+    - type
     type: object
   dto.LoginRequest:
     properties:
@@ -297,6 +333,126 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /acl/check:
+    post:
+      consumes:
+      - application/json
+      description: بررسی می‌کند که آیا کاربر اجازه انجام عمل مشخصی را دارد یا خیر.
+      parameters:
+      - description: اطلاعات بررسی دسترسی
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPermissionDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: بررسی سطح دسترسی
+      tags:
+      - ACL
+  /acl/grouping/add:
+    post:
+      consumes:
+      - application/json
+      description: یک نقش یا گروه به نقش/گروه دیگر تخصیص می‌دهد (گروه‌بندی).
+      parameters:
+      - description: اطلاعات گروه‌بندی
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupingDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: افزودن گروه‌بندی
+      tags:
+      - ACL
+  /acl/policy/create:
+    post:
+      consumes:
+      - application/json
+      description: مجوزی برای یک کاربر/گروه جهت انجام عملی بر یک شیء اضافه می‌کند.
+      parameters:
+      - description: اطلاعات مجوز
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPermissionDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: افزودن مجوز
+      tags:
+      - ACL
+  /acl/policy/remove:
+    post:
+      consumes:
+      - application/json
+      description: مجوز مشخص شده را برای کاربر/گروه حذف می‌کند.
+      parameters:
+      - description: اطلاعات مجوز برای حذف
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPermissionDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: حذف مجوز
+      tags:
+      - ACL
   /approval/apply-decision:
     post:
       consumes:

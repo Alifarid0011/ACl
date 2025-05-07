@@ -61,6 +61,15 @@ func ProviderBlackListRepository(db *mongo.Database) repository.BlackListTokenRe
 func ProvideRefreshTokenRepository(db *mongo.Database) repository.RefreshTokenRepository {
 	return repository.NewRefreshTokenRepository(db)
 }
+func ProviderCasbinRepository(enforcer *casbin.Enforcer) repository.CasbinRepository {
+	return repository.NewCasbinRepository(enforcer)
+}
+func ProviderCasbinController(service service.CasbinService) controller.CasbinController {
+	return controller.NewACLController(service)
+}
+func ProviderCasbinService(repo repository.CasbinRepository) service.CasbinService {
+	return service.NewCasbinService(repo)
+}
 func ProvideJWT(secret string) utils.JwtToken {
 	return utils.NewJwtToken(secret)
 }

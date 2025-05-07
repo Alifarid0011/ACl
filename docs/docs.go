@@ -15,6 +15,190 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/acl/check": {
+            "post": {
+                "description": "بررسی می‌کند که آیا کاربر اجازه انجام عمل مشخصی را دارد یا خیر.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ACL"
+                ],
+                "summary": "بررسی سطح دسترسی",
+                "parameters": [
+                    {
+                        "description": "اطلاعات بررسی دسترسی",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPermissionDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/acl/grouping/add": {
+            "post": {
+                "description": "یک نقش یا گروه به نقش/گروه دیگر تخصیص می‌دهد (گروه‌بندی).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ACL"
+                ],
+                "summary": "افزودن گروه‌بندی",
+                "parameters": [
+                    {
+                        "description": "اطلاعات گروه‌بندی",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupingDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/acl/policy/create": {
+            "post": {
+                "description": "مجوزی برای یک کاربر/گروه جهت انجام عملی بر یک شیء اضافه می‌کند.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ACL"
+                ],
+                "summary": "افزودن مجوز",
+                "parameters": [
+                    {
+                        "description": "اطلاعات مجوز",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPermissionDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/acl/policy/remove": {
+            "post": {
+                "description": "مجوز مشخص شده را برای کاربر/گروه حذف می‌کند.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ACL"
+                ],
+                "summary": "حذف مجوز",
+                "parameters": [
+                    {
+                        "description": "اطلاعات مجوز برای حذف",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPermissionDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/approval/apply-decision": {
             "post": {
                 "description": "Apply a decision to a step in an approval flow",
@@ -777,6 +961,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CheckPermissionDTO": {
+            "type": "object",
+            "required": [
+                "act",
+                "obj",
+                "sub",
+                "subject_collection"
+            ],
+            "properties": {
+                "act": {
+                    "type": "string"
+                },
+                "obj": {
+                    "type": "string"
+                },
+                "sub": {
+                    "type": "string"
+                },
+                "subject_collection": {
+                    "type": "string",
+                    "enum": [
+                        "User"
+                    ]
+                }
+            }
+        },
         "dto.CreateFlowRequest": {
             "type": "object",
             "required": [
@@ -844,6 +1054,31 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.GroupingDTO": {
+            "type": "object",
+            "required": [
+                "child",
+                "parent",
+                "type"
+            ],
+            "properties": {
+                "child": {
+                    "description": "یوزر یا منبع",
+                    "type": "string"
+                },
+                "parent": {
+                    "description": "نقش",
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "g",
+                        "g2"
+                    ]
                 }
             }
         },
