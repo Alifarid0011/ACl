@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"acl-casbin/constant"
 	"acl-casbin/model"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +16,7 @@ type UserRepositoryImpl struct {
 
 func NewUserRepository(db *mongo.Database) UserRepository {
 	return &UserRepositoryImpl{
-		collection: db.Collection("users"),
+		collection: db.Collection(constant.UserCollection),
 	}
 }
 func (r *UserRepositoryImpl) Delete(user *model.User) error {

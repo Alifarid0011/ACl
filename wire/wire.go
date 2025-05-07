@@ -6,6 +6,7 @@ package wire
 import (
 	"acl-casbin/controller"
 	"acl-casbin/repository"
+	"acl-casbin/utils"
 	"github.com/casbin/casbin/v2"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,6 +21,8 @@ type App struct {
 	UserRepo         repository.UserRepository
 	ApproveCtrl      controller.ApprovalController
 	ApproveRepo      repository.ApprovalRepository
+	BlackListRepo    repository.BlackListTokenRepository
+	TokenManager     utils.JwtToken
 }
 
 func InitializeApp(secret string) (*App, error) {
@@ -37,7 +40,8 @@ func InitializeApp(secret string) (*App, error) {
 		ProviderApprovalRepository,
 		ProvideUserService,
 		ProvideUserController,
-		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo", "ApproveCtrl", "ApproveRepo"),
+		ProviderBlackListRepository,
+		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo", "ApproveCtrl", "ApproveRepo", "BlackListRepo", "TokenManager"),
 	)
 	return &App{}, nil
 }

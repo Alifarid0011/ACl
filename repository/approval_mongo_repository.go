@@ -15,7 +15,7 @@ type ApprovalMongoRepository struct {
 }
 
 func NewApprovalMongoRepository(db *mongo.Database) ApprovalRepository {
-	return &ApprovalMongoRepository{collection: db.Collection("approval")}
+	return &ApprovalMongoRepository{collection: db.Collection(constant.ApprovalCollection)}
 }
 
 func (r *ApprovalMongoRepository) ApplyDecisionWithLogic(ctx context.Context, objectID, objectType string, stepID int, decision model.ApprovalDecision) error {

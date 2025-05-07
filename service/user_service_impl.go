@@ -60,14 +60,15 @@ func (s *UserServiceImpl) CreateUser(req dto.CreateUserRequest) (*dto.UserRespon
 		return nil, err
 	}
 	user := &model.User{
-		UID:       utils.GenerateUID(),
-		Username:  req.Username,
-		Email:     req.Email,
-		Password:  hashedPassword,
-		Mobile:    req.Mobile,
-		FullName:  req.FullName,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		UID:          utils.GenerateUID(),
+		Username:     req.Username,
+		Email:        req.Email,
+		NationalCode: req.NationalCode,
+		Password:     hashedPassword,
+		Mobile:       req.Mobile,
+		FullName:     req.FullName,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 	if errCreate := s.userRepo.Create(user); errCreate != nil {
 		return nil, errCreate
