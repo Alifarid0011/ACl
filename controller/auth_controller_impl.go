@@ -78,6 +78,9 @@ func (c *authControllerImpl) Logout(ctx *gin.Context) {
 	response.New(ctx).Message("خروج با موفقیت انجام شد.").
 		MessageID("auth.logout.success").
 		Status(http.StatusOK).
+		Data(map[string]string{
+			"message": "خروج با موفقیت انجام شد. به امید دیدار.",
+		}).
 		Dispatch()
 }
 func (c *authControllerImpl) Register(ctx *gin.Context) {
