@@ -35,9 +35,6 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest) (dto.LoginResponse, error)
 	if errCompareHashAndPassword := utils.CompareHashAndPassword(user.Password, []byte(req.Password)); errCompareHashAndPassword != nil {
 		return dto.LoginResponse{}, errors.New("invalid credentials")
 	}
-	//if !s.hasRole(user.Roles, constant.RoleSuperAdmin) {
-	//	return dto.LoginResponse{}, errors.New("unauthorized")
-	//}
 	accessTokenExpired := time.Now().Add(config.Get.Token.ExpiryAccessToken * time.Minute)
 	refreshTokenExpired := time.Now().Add(config.Get.Token.ExpiryRefreshToken * time.Minute)
 	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), user.UID, user.Roles)
