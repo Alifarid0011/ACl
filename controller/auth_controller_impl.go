@@ -12,10 +12,11 @@ import (
 
 type authControllerImpl struct {
 	authService service.AuthService
+	userService service.UserService
 }
 
-func NewAuthController(authService service.AuthService) AuthController {
-	return &authControllerImpl{authService: authService}
+func NewAuthController(authService service.AuthService, userService service.UserService) AuthController {
+	return &authControllerImpl{authService: authService, userService: userService}
 }
 
 // Login godoc
@@ -83,8 +84,40 @@ func (c *authControllerImpl) Logout(ctx *gin.Context) {
 		}).
 		Dispatch()
 }
-func (c *authControllerImpl) Register(ctx *gin.Context) {
 
+// Register godoc
+// @Summary Register  user Registration
+// @Description
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Security AuthBearer
+// @Success      200 {object} response.Response
+// @Router /auth/register [post]
+func (c *authControllerImpl) Register(ctx *gin.Context) {
+	var req dto.CreateUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.register.failed").
+			Status(http.StatusBadRequest).
+			Errors(err).
+			Dispatch()
+		return
+	}
+	userResponse, err := c.userService.CreateUser(req)
+	if err != nil {
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.register.failed").
+			Status(http.StatusInternalServerError).
+			Errors(err).
+			Dispatch()
+		return
+	}
+	response.New(ctx).Message("خوش آمدید.").
+		MessageID("auth.register.success").
+		Data(userResponse).
+		Status(http.StatusCreated).
+		Dispatch()
 }
 
 // UseRefreshToken godoc

@@ -12,5 +12,6 @@ func RegisterAuthRoutes(r *gin.Engine, app *wire.App) {
 		auth.POST("/login", app.AuthCtrl.Login)
 		auth.POST("/refresh_token", app.AuthCtrl.UseRefreshToken)
 		auth.GET("/logout", middleware.AuthMiddleware(app.BlackListRepo, app.TokenManager), app.AuthCtrl.Logout)
+		auth.POST("/register", app.AuthCtrl.Register)
 	}
 }

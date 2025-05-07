@@ -6,11 +6,12 @@ import (
 )
 
 type CreateUserRequest struct {
-	Username string `json:"username" validate:"required,unique_username,min=3,max=50"`
-	Password string `json:"password" validate:"required,password,min=6,max=100"`
-	Email    string `json:"email" validate:"required,unique_email,email"`
-	FullName string `json:"full_name" validate:"omitempty,max=100"`
-	Mobile   string `json:"mobile" validate:"required,unique_mobile,iran_mobile"`
+	Username     string `json:"username" validate:"required,unique_username,min=3,max=50"`
+	NationalCode string `json:"national_code" validate:"numeric,len=10"`
+	Password     string `json:"password" validate:"required,password,min=6,max=100"`
+	Email        string `json:"email" validate:"required,unique_email,email"`
+	FullName     string `json:"full_name" validate:"omitempty,max=100"`
+	Mobile       string `json:"mobile" validate:"required,unique_mobile,iran_mobile"`
 }
 
 type UpdateUserRequest struct {
