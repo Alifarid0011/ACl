@@ -30,6 +30,7 @@ func (r *refreshTokenRepositoryImpl) Store(userUid primitive.ObjectID, refreshTo
 		UserUid:         userUid,
 		UserAgent:       userAgent,
 		ExpiresAt:       expiresAt.UTC(),
+		UpdatedAt:       time.Now(),
 		RefreshUseCount: countOfUsage,
 		CreatedAt:       creationTime.UTC(),
 	}
@@ -64,11 +65,11 @@ func (r *refreshTokenRepositoryImpl) DeleteByRefreshToken(token string) error {
 }
 func (r *refreshTokenRepositoryImpl) FindByRefreshTokenWithUser(token string) (*model.RefreshTokenWithUser, error) {
 	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: bson.M{"token": token}}},
+		{{Key: "$match", Value: bson.M{"refresh_token": token}}},
 		{{
 			Key: "$lookup", Value: bson.M{
 				"from":         "users",
-				"localField":   "uid",
+				"localField":   "user_uid",
 				"foreignField": "uid",
 				"as":           "user",
 			},

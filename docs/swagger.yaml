@@ -113,26 +113,6 @@ definitions:
     - password
     - username
     type: object
-  dto.LoginResponse:
-    properties:
-      access_token:
-        type: string
-      access_token_expired:
-        type: integer
-      refresh_token:
-        type: string
-      refresh_token_expired:
-        type: integer
-      user_id:
-        type: string
-    type: object
-  dto.LogoutRequest:
-    properties:
-      access_token:
-        type: string
-    required:
-    - access_token
-    type: object
   dto.MessageResponse:
     properties:
       message:
@@ -270,8 +250,50 @@ definitions:
         description: 'نوع وابستگی: step, group, role'
         type: string
     type: object
+  response.Meta:
+    properties:
+      code:
+        type: integer
+      extra:
+        additionalProperties: true
+        description: For additional metadata
+        type: object
+      message:
+        type: string
+      message_id:
+        description: For i18n
+        type: string
+      pagination:
+        $ref: '#/definitions/response.PaginationMeta'
+      success:
+        type: boolean
+      trace_id:
+        type: string
+    type: object
+  response.PaginationMeta:
+    properties:
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      errors: {}
+      meta:
+        $ref: '#/definitions/response.Meta'
+    type: object
 info:
   contact: {}
+  description: This is a sample API for demonstrating Swagger with Bearer Authentication
+    in Go using Gin
+  title: Swagger Example API
+  version: "1.0"
 paths:
   /approval/apply-decision:
     post:
@@ -469,29 +491,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.LoginResponse'
+            $ref: '#/definitions/response.Response'
       summary: Authenticate user
       tags:
-      - auth
+      - Auth
   /auth/logout:
-    post:
+    get:
       consumes:
       - application/json
       description: Logs out the user and invalidates the refresh token based on user-agent
-      parameters:
-      - description: Logout request payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.LogoutRequest'
       produces:
       - application/json
       responses: {}
+      security:
+      - AuthBearer: []
       summary: Logout and invalidate refresh token
       tags:
       - Auth
-  /auth/refresh:
+  /auth/refresh_token:
     post:
       consumes:
       - application/json
@@ -691,4 +708,9 @@ paths:
       summary: Find user by username
       tags:
       - users
+securityDefinitions:
+  AuthBearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type Jwt struct {
@@ -16,7 +17,7 @@ func NewJwtToken(secret string) JwtToken {
 }
 func (j *Jwt) GenerateAccessToken(Expiry int64, uid primitive.ObjectID, roles []string) (string, error) {
 	claims := jwt.MapClaims{
-		"uid":   uid,
+		"uid":   uid.String(),
 		"roles": roles,
 		"exp":   Expiry,
 		"type":  constant.AccessToken,
@@ -27,7 +28,7 @@ func (j *Jwt) GenerateAccessToken(Expiry int64, uid primitive.ObjectID, roles []
 
 func (j *Jwt) GenerateRefreshToken(Expiry int64, uid primitive.ObjectID) (string, error) {
 	claims := jwt.MapClaims{
-		"uid":  uid,
+		"uid":  uid.String(),
 		"exp":  Expiry,
 		"type": constant.RefreshToken,
 	}
@@ -39,12 +40,13 @@ func (j *Jwt) ParseToken(tokenStr string) (*CustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secretKey), nil
 	})
-
 	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+	claims, ok := token.Claims.(*CustomClaims)
+	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
 		return nil, errors.New("invalid or expired token")
 	}
-
-	claims, ok := token.Claims.(*CustomClaims)
 	if !ok {
 		return nil, errors.New("invalid claims structure")
 	}

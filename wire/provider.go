@@ -30,8 +30,9 @@ func ProvideAuthService(
 	userRepo repository.UserRepository,
 	refreshTokenRepo repository.RefreshTokenRepository,
 	tokenManager utils.JwtToken,
+	blackListRepo repository.BlackListTokenRepository,
 ) service.AuthService {
-	return service.NewAuthService(userRepo, tokenManager, refreshTokenRepo)
+	return service.NewAuthService(userRepo, tokenManager, refreshTokenRepo, blackListRepo)
 }
 
 func ProvideAuthController(authService service.AuthService) controller.AuthController {

@@ -3,6 +3,7 @@ package controller
 import (
 	"acl-casbin/constant"
 	"acl-casbin/dto"
+	"acl-casbin/dto/response"
 	"acl-casbin/service"
 	"acl-casbin/utils"
 	"github.com/gin-gonic/gin"
@@ -20,25 +21,37 @@ func NewAuthController(authService service.AuthService) AuthController {
 // Login godoc
 // @Summary      Authenticate user
 // @Description  Takes username and password, returns access and refresh token
-// @Tags         auth
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.LoginRequest true "Login credentials"
-// @Success      200 {object} dto.LoginResponse
+// @Success      200 {object} response.Response
 // @Router       /auth/login [post]
 func (c *authControllerImpl) Login(ctx *gin.Context) {
 	var req dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.login.failed").
+			Status(http.StatusBadRequest).
+			Errors(err).
+			Dispatch()
 		return
 	}
 	UserAgentInfo, _ := ctx.Get(constant.UserAgentInfo)
 	resp, err := c.authService.Login(req, UserAgentInfo.(*utils.UserAgent))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.login.failed").
+			Status(http.StatusUnauthorized).
+			Errors(err).
+			Dispatch()
 		return
 	}
-	ctx.JSON(http.StatusOK, resp)
+	response.New(ctx).Message("خوش آمدید.").
+		MessageID("auth.login.success").
+		Data(resp).
+		Status(http.StatusOK).
+		Dispatch()
 }
 
 // Logout godoc
@@ -47,21 +60,25 @@ func (c *authControllerImpl) Login(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body dto.LogoutRequest true "Logout request payload"
-// @Router /auth/logout [post]
+// @Security AuthBearer
+// @Success      200 {object} response.Response
+// @Router /auth/logout [get]
 func (c *authControllerImpl) Logout(ctx *gin.Context) {
-	var req dto.LogoutRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
 	UserAgentInfo, _ := ctx.Get(constant.UserAgentInfo)
-	err := c.authService.Logout(req, UserAgentInfo.(*utils.UserAgent))
+	token, _ := ctx.Get("access_token")
+	err := c.authService.Logout(token.(string), UserAgentInfo.(*utils.UserAgent))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.logout.failed").
+			Status(http.StatusUnauthorized).
+			Errors(err).
+			Dispatch()
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"success": "Success"})
+	response.New(ctx).Message("خروج با موفقیت انجام شد.").
+		MessageID("auth.logout.success").
+		Status(http.StatusOK).
+		Dispatch()
 }
 func (c *authControllerImpl) Register(ctx *gin.Context) {
 
@@ -74,18 +91,31 @@ func (c *authControllerImpl) Register(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body dto.RefreshRequest true "Refresh token payload"
-// @Router /auth/refresh [post]
+// @Success      200 {object} response.Response
+// @Router /auth/refresh_token [post]
 func (c *authControllerImpl) UseRefreshToken(ctx *gin.Context) {
 	var req dto.RefreshRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.refresh_token.failed").
+			Status(http.StatusBadRequest).
+			Errors(err).
+			Dispatch()
 		return
 	}
 	UserAgentInfo, _ := ctx.Get(constant.UserAgentInfo)
 	resp, err := c.authService.UseRefreshToken(req, UserAgentInfo.(*utils.UserAgent))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		response.New(ctx).Message("عملیات با خطا مواجه شد.").
+			MessageID("auth.refresh_token.failed").
+			Status(http.StatusUnauthorized).
+			Errors(err).
+			Dispatch()
 		return
 	}
-	ctx.JSON(http.StatusOK, resp)
+	response.New(ctx).Message("توکن جدید ایجاد شد.").
+		MessageID("auth.refresh_token.success").
+		Data(resp).
+		Status(http.StatusOK).
+		Dispatch()
 }

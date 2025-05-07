@@ -64,8 +64,8 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest, userAgent *utils.UserAgent
 		RefreshTokenExpired: refreshTokenExpired.Unix(),
 	}, nil
 }
-func (s *AuthServiceImpl) Logout(req dto.LogoutRequest, userAgent *utils.UserAgent) error {
-	token, err := s.refreshRepo.FindByAccessToken(req.AccessToken)
+func (s *AuthServiceImpl) Logout(AccessToken string, userAgent *utils.UserAgent) error {
+	token, err := s.refreshRepo.FindByAccessToken(AccessToken)
 	if err != nil {
 		return err
 	}

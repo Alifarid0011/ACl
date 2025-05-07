@@ -7,9 +7,9 @@ import (
 )
 
 type BlackListToken struct {
-	Token     string             `json:"token"`
-	UserAgent *utils.UserAgent   `json:"user_agent"`
-	UserId    primitive.ObjectID `json:"user_id"`
-	CreatedAt time.Time          `json:"created_at"`
-	ExpiresAt time.Time          `json:"expires_at"`
+	Token     string             `bson:"token" json:"token"`
+	UserAgent *utils.UserAgent   `bson:"user_agent" json:"user_agent"`
+	UserId    primitive.ObjectID `bson:"user_id" json:"user_id"`
+	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
+	ExpiresAt time.Time          `bson:"expires_at" json:"expires_at"`
 }

@@ -9,6 +9,7 @@ package wire
 import (
 	"acl-casbin/controller"
 	"acl-casbin/repository"
+	"acl-casbin/utils"
 	"github.com/casbin/casbin/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,14 +23,14 @@ func InitializeApp(secret string) (*App, error) {
 	userRepository := ProvideUserRepository(database)
 	refreshTokenRepository := ProvideRefreshTokenRepository(database)
 	jwtToken := ProvideJWT(secret)
-	authService := ProvideAuthService(userRepository, refreshTokenRepository, jwtToken)
+	blackListTokenRepository := ProviderBlackListRepository(database)
+	authService := ProvideAuthService(userRepository, refreshTokenRepository, jwtToken, blackListTokenRepository)
 	authController := ProvideAuthController(authService)
 	userService := ProvideUserService(userRepository)
 	userController := ProvideUserController(userService)
 	approvalRepository := ProviderApprovalRepository(database)
 	approvalService := ProviderApprovalService(approvalRepository)
 	approvalController := ProviderApprovalController(approvalService)
-	blackListTokenRepository := ProviderBlackListRepository(database)
 	app := &App{
 		Mongo:            client,
 		Enforcer:         enforcer,
@@ -40,6 +41,7 @@ func InitializeApp(secret string) (*App, error) {
 		ApproveCtrl:      approvalController,
 		ApproveRepo:      approvalRepository,
 		BlackListRepo:    blackListTokenRepository,
+		TokenManager:     jwtToken,
 	}
 	return app, nil
 }
@@ -56,4 +58,5 @@ type App struct {
 	ApproveCtrl      controller.ApprovalController
 	ApproveRepo      repository.ApprovalRepository
 	BlackListRepo    repository.BlackListTokenRepository
+	TokenManager     utils.JwtToken
 }
