@@ -92,6 +92,7 @@ func (c *authControllerImpl) Logout(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security AuthBearer
+// @Param request body dto.CreateUserRequest true "register user"
 // @Success      200 {object} response.Response
 // @Router /auth/register [post]
 func (c *authControllerImpl) Register(ctx *gin.Context) {

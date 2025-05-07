@@ -35,8 +35,8 @@ func ProvideAuthService(
 	return service.NewAuthService(userRepo, tokenManager, refreshTokenRepo, blackListRepo)
 }
 
-func ProvideAuthController(authService service.AuthService) controller.AuthController {
-	return controller.NewAuthController(authService)
+func ProvideAuthController(authService service.AuthService, userService service.UserService) controller.AuthController {
+	return controller.NewAuthController(authService, userService)
 }
 
 // ProvideUserService wires UserRepository into UserServiceImpl.

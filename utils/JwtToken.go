@@ -7,7 +7,7 @@ import (
 )
 
 type JwtToken interface {
-	GenerateAccessToken(Expiry int64, uid primitive.ObjectID, roles []string) (string, error)
+	GenerateAccessToken(Expiry int64, uid primitive.ObjectID, roles []primitive.ObjectID) (string, error)
 	GenerateRefreshToken(Expiry int64, uid primitive.ObjectID) (string, error)
 	ParseToken(tokenStr string) (*CustomClaims, error)
 }

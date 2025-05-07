@@ -84,6 +84,8 @@ definitions:
         type: string
       mobile:
         type: string
+      national_code:
+        type: string
       password:
         maxLength: 100
         minLength: 6
@@ -438,7 +440,7 @@ paths:
       tags:
       - Approval
   /approval/update-step:
-    post:
+    put:
       consumes:
       - application/json
       description: Update the status of a step in the approval flow
@@ -502,7 +504,11 @@ paths:
       description: Logs out the user and invalidates the refresh token based on user-agent
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
       security:
       - AuthBearer: []
       summary: Logout and invalidate refresh token
@@ -523,8 +529,35 @@ paths:
           $ref: '#/definitions/dto.RefreshRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: Use refresh token to get new access token
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: register user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - AuthBearer: []
+      summary: Register  user Registration
       tags:
       - Auth
   /user:

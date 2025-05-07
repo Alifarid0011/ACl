@@ -232,7 +232,7 @@ const docTemplate = `{
             }
         },
         "/approval/update-step": {
-            "post": {
+            "put": {
                 "description": "Update the status of a step in the approval flow",
                 "consumes": [
                     "application/json"
@@ -338,7 +338,14 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Logout and invalidate refresh token",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
             }
         },
         "/auth/refresh_token": {
@@ -365,7 +372,52 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register  user Registration",
+                "parameters": [
+                    {
+                        "description": "register user",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
             }
         },
         "/user": {
@@ -770,6 +822,9 @@ const docTemplate = `{
                     "maxLength": 100
                 },
                 "mobile": {
+                    "type": "string"
+                },
+                "national_code": {
                     "type": "string"
                 },
                 "password": {
