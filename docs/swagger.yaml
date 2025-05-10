@@ -58,20 +58,18 @@ definitions:
   dto.CheckPermissionDTO:
     properties:
       act:
+        description: متد مانند GET, POST, PUT, DELETE
         type: string
       obj:
+        description: مسیر مانند /user/all یا /approvals/:id
         type: string
       sub:
-        type: string
-      subject_collection:
-        enum:
-        - User
+        description: می‌تواند نقش یا یوزر باشد
         type: string
     required:
     - act
     - obj
     - sub
-    - subject_collection
     type: object
   dto.CreateFlowRequest:
     properties:
@@ -132,6 +130,7 @@ definitions:
         description: نقش
         type: string
       type:
+        description: g برای نقش‌ها و g2 برای کاربران
         enum:
         - g
         - g2
@@ -334,7 +333,7 @@ info:
   version: "1.0"
 paths:
   /acl/check:
-    post:
+    get:
       consumes:
       - application/json
       description: بررسی می‌کند که آیا کاربر اجازه انجام عمل مشخصی را دارد یا خیر.
@@ -393,6 +392,27 @@ paths:
       summary: افزودن گروه‌بندی
       tags:
       - ACL
+  /acl/permission/list:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      tags:
+      - ACL
   /acl/policy/create:
     post:
       consumes:
@@ -424,7 +444,7 @@ paths:
       tags:
       - ACL
   /acl/policy/remove:
-    post:
+    delete:
       consumes:
       - application/json
       description: مجوز مشخص شده را برای کاربر/گروه حذف می‌کند.
@@ -716,25 +736,26 @@ paths:
       summary: Register  user Registration
       tags:
       - Auth
-  /user:
+  /routes/list:
     get:
-      description: Retrieve a list of all users
+      consumes:
+      - application/json
+      description: این متد تمام مسیرها را همراه با متد HTTP آن‌ها دسته‌بندی‌شده بر
+        اساس prefix بازمی‌گرداند.
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.MessageResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/response.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get all users
+            $ref: '#/definitions/response.Response'
+      summary: دریافت لیست اندپوینت‌ها
       tags:
-      - users
+      - Route
   /user/{uid}:
     delete:
       description: Delete user by UID (admin only)
@@ -792,6 +813,25 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Update a user
+      tags:
+      - users
+  /user/all:
+    get:
+      description: Retrieve a list of all users
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all users
       tags:
       - users
   /user/create:

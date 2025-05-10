@@ -7,4 +7,6 @@ type CasbinController interface {
 	CreatePolicy(ctx *gin.Context)
 	RemovePolicy(ctx *gin.Context)
 	AddGroupingPolicy(ctx *gin.Context)
+	ListAllCasbinData(ctx *gin.Context)
+	ListPermissionsBySubject(ctx *gin.Context)
 }

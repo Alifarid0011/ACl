@@ -9,6 +9,7 @@ import (
 	"acl-casbin/service"
 	"acl-casbin/utils"
 	"github.com/casbin/casbin/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -27,6 +28,8 @@ type App struct {
 	CasbinRepo       repository.CasbinRepository
 	CasbinCtrl       controller.CasbinController
 	CasbinService    service.CasbinService
+	RouterCtr        controller.RouteController
+	Engine           *gin.Engine
 }
 
 func InitializeApp(secret string) (*App, error) {
@@ -48,7 +51,9 @@ func InitializeApp(secret string) (*App, error) {
 		ProviderCasbinRepository,
 		ProviderCasbinController,
 		ProviderCasbinService,
-		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo", "ApproveCtrl", "ApproveRepo", "BlackListRepo", "TokenManager", "CasbinRepo", "CasbinCtrl", "CasbinService"),
+		ProviderRouterController,
+		ProviderGinEngine,
+		wire.Struct(new(App), "Mongo", "Enforcer", "AuthCtrl", "UserCtrl", "UserRepo", "RefreshTokenRepo", "ApproveCtrl", "ApproveRepo", "BlackListRepo", "TokenManager", "CasbinRepo", "CasbinCtrl", "CasbinService", "RouterCtr", "Engine"),
 	)
 	return &App{}, nil
 }

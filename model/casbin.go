@@ -12,3 +12,29 @@ type GroupingDTO struct {
 	Child  DBRef  `json:"child" validate:"required"`  // یوزر یا منبع
 	Type   string `json:"type" validate:"required,oneof=g g2"`
 }
+
+type CasbinPolicy struct {
+	Subject string `json:"subject"`
+	Action  string `json:"action"`
+	Object  string `json:"object"`
+}
+
+type Permission struct {
+	Action string `json:"action"`
+	Object string `json:"object"`
+}
+
+type SubjectWithPermissions struct {
+	Subject     string       `json:"subject"`
+	Permissions []Permission `json:"permissions"`
+}
+
+type PermissionCategory struct {
+	Category    string       `json:"category"`
+	Permissions []Permission `json:"permissions"`
+}
+
+type CategorizedPermissions struct {
+	Subject     string                  `json:"subject"`
+	Permissions map[string][]Permission `json:"permissions"` // دسته‌بندی بر اساس category
+}

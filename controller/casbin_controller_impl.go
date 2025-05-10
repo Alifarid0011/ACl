@@ -5,6 +5,7 @@ import (
 	"acl-casbin/dto/response"
 	"acl-casbin/service"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func NewACLController(srv service.CasbinService) *ACLController {
 // @Param request body dto.CheckPermissionDTO true "اطلاعات بررسی دسترسی"
 // @Success 200 {object} response.Response
 // @Failure 400,500 {object} response.Response
-// @Router /acl/check [post]
+// @Router /acl/check [get]
 func (ctl *ACLController) CheckPermission(ctx *gin.Context) {
 	var req dto.CheckPermissionDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -36,7 +37,6 @@ func (ctl *ACLController) CheckPermission(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	allowed, err := ctl.service.IsAllowed(req.Sub, req.Act, req.Obj)
 	if err != nil {
 		response.New(ctx).Message("بررسی دسترسی با خطا مواجه شد").
@@ -46,7 +46,6 @@ func (ctl *ACLController) CheckPermission(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	response.New(ctx).Message("بررسی انجام شد").
 		MessageID("acl.check.success").
 		Status(http.StatusOK).
@@ -74,7 +73,6 @@ func (ctl *ACLController) CreatePolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	added, err := ctl.service.GrantPermission(req.Sub, req.Act, req.Obj)
 	if err != nil || !added {
 		response.New(ctx).Message("ثبت مجوز با خطا مواجه شد").
@@ -84,10 +82,36 @@ func (ctl *ACLController) CreatePolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	response.New(ctx).Message("مجوز با موفقیت ثبت شد").
 		MessageID("acl.policy.create.success").
 		Status(http.StatusOK).
+		Dispatch()
+}
+
+// ListAllCasbinData
+// @Summary
+// @Description
+// @Tags ACL
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response
+// @Failure 400,500 {object} response.Response
+// @Router /acl/permission/list [get]
+func (ctl *ACLController) ListAllCasbinData(ctx *gin.Context) {
+	data, err := ctl.service.GetAllCasbinData()
+	if err != nil {
+		response.New(ctx).Message("خطا در دریافت داده‌های Casbin").
+			MessageID("casbin.data.fetch.failed").
+			Status(http.StatusInternalServerError).
+			Errors(err).
+			Dispatch()
+		return
+	}
+
+	response.New(ctx).Message("تمامی سیاست‌ها و گروه‌بندی‌ها دریافت شد").
+		MessageID("casbin.data.fetch.success").
+		Status(http.StatusOK).
+		Data(data).
 		Dispatch()
 }
 
@@ -100,7 +124,7 @@ func (ctl *ACLController) CreatePolicy(ctx *gin.Context) {
 // @Param request body dto.CheckPermissionDTO true "اطلاعات مجوز برای حذف"
 // @Success 200 {object} response.Response
 // @Failure 400,500 {object} response.Response
-// @Router /acl/policy/remove [post]
+// @Router /acl/policy/remove [delete]
 func (ctl *ACLController) RemovePolicy(ctx *gin.Context) {
 	var req dto.CheckPermissionDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -120,7 +144,6 @@ func (ctl *ACLController) RemovePolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	response.New(ctx).Message("مجوز با موفقیت حذف شد").
 		MessageID("acl.policy.remove.success").
 		Status(http.StatusOK).
@@ -147,7 +170,6 @@ func (ctl *ACLController) AddGroupingPolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-
 	err := ctl.service.AddGrouping(req.Parent, req.Child, req.Type)
 	if err != nil {
 		response.New(ctx).Message("افزودن گروه با خطا مواجه شد").
@@ -160,5 +182,62 @@ func (ctl *ACLController) AddGroupingPolicy(ctx *gin.Context) {
 	response.New(ctx).Message("گروه‌بندی با موفقیت اضافه شد").
 		MessageID("acl.grouping.add.success").
 		Status(http.StatusOK).
+		Dispatch()
+}
+
+// ListPermissionsBySubject
+// @Summary
+// @Description
+// @Tags ACL
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response
+// @Failure 400,500 {object} response.Response
+// @Router /acl/permission/list [get]
+func (ctl *ACLController) ListPermissionsBySubject(ctx *gin.Context) {
+	data, err := ctl.service.GetPermissionsBySubject()
+	if err != nil {
+		response.New(ctx).Message("خطا در دریافت مجوزها").
+			MessageID("casbin.permissions.fetch.failed").
+			Status(http.StatusInternalServerError).
+			Errors(err).
+			Dispatch()
+		return
+	}
+	response.New(ctx).Message("مجوزها با موفقیت دریافت شد").
+		MessageID("casbin.permissions.fetch.success").
+		Status(http.StatusOK).
+		Data(data).
+		Dispatch()
+}
+
+func (ctl *ACLController) GetMyPermissions(ctx *gin.Context) {
+	userID, err := primitive.ObjectIDFromHex(ctx.GetString("user_uid"))
+	if err != nil {
+		response.New(ctx).
+			Message("شناسه کاربر نامعتبر است").
+			MessageID("user.uid.invalid").
+			Status(http.StatusBadRequest).
+			Errors(err).
+			Dispatch()
+		return
+	}
+
+	data, err := ctl.service.GetUserCategorizedPermissions(userID)
+	if err != nil {
+		response.New(ctx).
+			Message("خطا در دریافت مجوزهای کاربر").
+			MessageID("casbin.user.permissions.failed").
+			Status(http.StatusInternalServerError).
+			Errors(err).
+			Dispatch()
+		return
+	}
+
+	response.New(ctx).
+		Message("مجوزهای کاربر با موفقیت دریافت شد").
+		MessageID("casbin.user.permissions.success").
+		Status(http.StatusOK).
+		Data(data).
 		Dispatch()
 }

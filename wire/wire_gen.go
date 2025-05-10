@@ -9,8 +9,10 @@ package wire
 import (
 	"acl-casbin/controller"
 	"acl-casbin/repository"
+	"acl-casbin/service"
 	"acl-casbin/utils"
 	"github.com/casbin/casbin/v2"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,6 +33,11 @@ func InitializeApp(secret string) (*App, error) {
 	approvalRepository := ProviderApprovalRepository(database)
 	approvalService := ProviderApprovalService(approvalRepository)
 	approvalController := ProviderApprovalController(approvalService)
+	casbinRepository := ProviderCasbinRepository(enforcer)
+	casbinService := ProviderCasbinService(casbinRepository)
+	casbinController := ProviderCasbinController(casbinService)
+	engine := ProviderGinEngine()
+	routeController := ProviderRouterController(engine)
 	app := &App{
 		Mongo:            client,
 		Enforcer:         enforcer,
@@ -42,6 +49,11 @@ func InitializeApp(secret string) (*App, error) {
 		ApproveRepo:      approvalRepository,
 		BlackListRepo:    blackListTokenRepository,
 		TokenManager:     jwtToken,
+		CasbinRepo:       casbinRepository,
+		CasbinCtrl:       casbinController,
+		CasbinService:    casbinService,
+		RouterCtr:        routeController,
+		Engine:           engine,
 	}
 	return app, nil
 }
@@ -59,4 +71,9 @@ type App struct {
 	ApproveRepo      repository.ApprovalRepository
 	BlackListRepo    repository.BlackListTokenRepository
 	TokenManager     utils.JwtToken
+	CasbinRepo       repository.CasbinRepository
+	CasbinCtrl       controller.CasbinController
+	CasbinService    service.CasbinService
+	RouterCtr        controller.RouteController
+	Engine           *gin.Engine
 }

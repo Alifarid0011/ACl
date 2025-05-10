@@ -8,6 +8,7 @@ import (
 	"acl-casbin/utils"
 	"fmt"
 	"github.com/casbin/casbin/v2"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"strings"
 )
@@ -69,6 +70,12 @@ func ProviderCasbinController(service service.CasbinService) controller.CasbinCo
 }
 func ProviderCasbinService(repo repository.CasbinRepository) service.CasbinService {
 	return service.NewCasbinService(repo)
+}
+func ProviderRouterController(engine *gin.Engine) controller.RouteController {
+	return controller.NewRouteController(engine)
+}
+func ProviderGinEngine() *gin.Engine {
+	return gin.Default()
 }
 func ProvideJWT(secret string) utils.JwtToken {
 	return utils.NewJwtToken(secret)

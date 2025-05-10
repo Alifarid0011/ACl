@@ -16,7 +16,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/acl/check": {
-            "post": {
+            "get": {
                 "description": "بررسی می‌کند که آیا کاربر اجازه انجام عمل مشخصی را دارد یا خیر.",
                 "consumes": [
                     "application/json"
@@ -107,6 +107,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/acl/permission/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ACL"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/acl/policy/create": {
             "post": {
                 "description": "مجوزی برای یک کاربر/گروه جهت انجام عملی بر یک شیء اضافه می‌کند.",
@@ -154,7 +187,7 @@ const docTemplate = `{
             }
         },
         "/acl/policy/remove": {
-            "post": {
+            "delete": {
                 "description": "مجوز مشخص شده را برای کاربر/گروه حذف می‌کند.",
                 "consumes": [
                     "application/json"
@@ -604,7 +637,36 @@ const docTemplate = `{
                 }
             }
         },
-        "/user": {
+        "/routes/list": {
+            "get": {
+                "description": "این متد تمام مسیرها را همراه با متد HTTP آن‌ها دسته‌بندی‌شده بر اساس prefix بازمی‌گرداند.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Route"
+                ],
+                "summary": "دریافت لیست اندپوینت‌ها",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/all": {
             "get": {
                 "description": "Retrieve a list of all users",
                 "tags": [
@@ -966,24 +1028,20 @@ const docTemplate = `{
             "required": [
                 "act",
                 "obj",
-                "sub",
-                "subject_collection"
+                "sub"
             ],
             "properties": {
                 "act": {
+                    "description": "متد مانند GET, POST, PUT, DELETE",
                     "type": "string"
                 },
                 "obj": {
+                    "description": "مسیر مانند /user/all یا /approvals/:id",
                     "type": "string"
                 },
                 "sub": {
+                    "description": "می‌تواند نقش یا یوزر باشد",
                     "type": "string"
-                },
-                "subject_collection": {
-                    "type": "string",
-                    "enum": [
-                        "User"
-                    ]
                 }
             }
         },
@@ -1074,6 +1132,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "description": "g برای نقش‌ها و g2 برای کاربران",
                     "type": "string",
                     "enum": [
                         "g",

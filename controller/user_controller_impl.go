@@ -92,7 +92,7 @@ func (u userControllerImpl) Create(ctx *gin.Context) {
 // @Failure 400 {object} dto.ErrorResponse
 // @Failure 500 {object} dto.ErrorResponse
 // @Success 200 {object} dto.MessageResponse
-// @Router       /user [get]
+// @Router       /user/all [get]
 func (u userControllerImpl) GetAll(ctx *gin.Context) {
 	users, err := u.userService.GetAll()
 	if err != nil {
