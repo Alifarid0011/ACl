@@ -6,6 +6,7 @@ import (
 	"acl-casbin/repository"
 	"acl-casbin/utils"
 	"errors"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func (s *UserServiceImpl) FindByUsername(username string) (*dto.UserResponse, er
 	return mapToUserResponse(user), nil
 }
 
-func (s *UserServiceImpl) UpdateUser(uid string, req dto.UpdateUserRequest) (*dto.UserResponse, error) {
+func (s *UserServiceImpl) UpdateUser(uid primitive.ObjectID, req dto.UpdateUserRequest) (*dto.UserResponse, error) {
 	// Find the user by UID
 	user, err := s.userRepo.FindByUID(uid)
 	if err != nil {
@@ -42,7 +43,7 @@ func (s *UserServiceImpl) UpdateUser(uid string, req dto.UpdateUserRequest) (*dt
 	return mapToUserResponse(user), nil
 }
 
-func (s *UserServiceImpl) FindByUID(uid string) (*dto.UserResponse, error) {
+func (s *UserServiceImpl) FindByUID(uid primitive.ObjectID) (*dto.UserResponse, error) {
 	user, err := s.userRepo.FindByUID(uid)
 	if err != nil {
 		return nil, err
@@ -89,12 +90,12 @@ func (s *UserServiceImpl) GetAll() ([]dto.UserResponse, error) {
 	return result, nil
 }
 
-func (s *UserServiceImpl) DeleteUser(uid string) error {
+func (s *UserServiceImpl) DeleteUser(uid primitive.ObjectID) error {
 	// این متد باید به ریپازیتوری اضافه بشه
 	return errors.New("delete not implemented in repository yet")
 }
 
-func (s *UserServiceImpl) Me(userID string) (*dto.UserResponse, error) {
+func (s *UserServiceImpl) Me(userID primitive.ObjectID) (*dto.UserResponse, error) {
 	return s.FindByUID(userID)
 }
 
