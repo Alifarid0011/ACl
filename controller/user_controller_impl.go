@@ -5,6 +5,7 @@ import (
 	"acl-casbin/service"
 	"acl-casbin/utils"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -47,8 +48,8 @@ func (u userControllerImpl) FindByUsername(ctx *gin.Context) {
 // @Router       /user/uid/{uid} [get]
 func (u userControllerImpl) FindByUID(ctx *gin.Context) {
 	uid := ctx.Param("uid")
-
-	userResponse, err := u.userService.FindByUID(uid)
+	objectID, err := primitive.ObjectIDFromHex(uid)
+	userResponse, err := u.userService.FindByUID(objectID)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to find user"})
 		return
@@ -129,7 +130,8 @@ func (u userControllerImpl) Update(ctx *gin.Context) {
 	//	return
 	//}
 	// Proceed with update
-	userResponse, err := u.userService.UpdateUser(uid, req)
+	objectID, err := primitive.ObjectIDFromHex(uid)
+	userResponse, err := u.userService.UpdateUser(objectID, req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to update user"})
 		return
@@ -148,9 +150,9 @@ func (u userControllerImpl) Update(ctx *gin.Context) {
 // @Router       /user/{uid} [delete]
 func (u userControllerImpl) Delete(ctx *gin.Context) {
 	uid := ctx.Param("uid")
-
-	err := u.userService.DeleteUser(uid)
-	if err != nil {
+	objectID, _ := primitive.ObjectIDFromHex(uid)
+	errUserService := u.userService.DeleteUser(objectID)
+	if errUserService != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to delete user"})
 		return
 	}
@@ -168,8 +170,8 @@ func (u userControllerImpl) Delete(ctx *gin.Context) {
 func (u userControllerImpl) Me(ctx *gin.Context) {
 	// Retrieve current user ID from the JWT or session context
 	userID := ctx.GetString("userID")
-
-	userResponse, err := u.userService.Me(userID)
+	objectID, err := primitive.ObjectIDFromHex(userID)
+	userResponse, err := u.userService.Me(objectID)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to fetch your user data"})
 		return

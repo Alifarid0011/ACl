@@ -134,44 +134,41 @@ func determineCategory(path string) string {
 }
 
 func (r *casbinRepository) GetCategorizedPermissionsByUserID(userID primitive.ObjectID) (model.CategorizedPermissions, error) {
-	user, err := r.userRepo.FindByUID(userID)
-	if err != nil {
-		return model.CategorizedPermissions{}, err
-	}
-	mainRole := user.Roles
-	allRoles, err := r.enforcer.GetImplicitRolesForUser(userID.Hex())
-	if err != nil {
-		return model.CategorizedPermissions{}, err
-	}
-	roleSet := make(map[string]struct{})
-	roleSet[mainRole] = struct{}{}
-	for _, role := range allRoles {
-		roleSet[role] = struct{}{}
-	}
-	allPermissions := make(map[string][]model.Permission)
-	for role := range roleSet {
-		perms, err := r.enforcer.GetImplicitPermissionsForUser(role)
-		if err != nil {
-			continue
-		}
-		for _, p := range perms {
-			if len(p) >= 3 {
-				allPermissions[role] = append(allPermissions[role], model.Permission{
-					Action: p[1],
-					Object: p[2],
-				})
-			}
-		}
-	}
-	categorized := make(map[string][]model.Permission)
-	for _, perms := range allPermissions {
-		for _, perm := range perms {
-			cat := determineCategory(perm.Object)
-			categorized[cat] = append(categorized[cat], perm)
-		}
-	}
-	return model.CategorizedPermissions{
-		Subject:     userID.Hex(),
-		Permissions: categorized,
-	}, nil
+	//user, err := r.userRepo.FindByUID(userID)
+	//if err != nil {
+	//	return model.CategorizedPermissions{}, err
+	//}
+	//mainRole := user.Roles
+	//allRoles, err := r.enforcer.GetImplicitRolesForUser(userID.Hex())
+	//if err != nil {
+	//	return model.CategorizedPermissions{}, err
+	//}
+	//roleSet := make(map[string]struct{})
+	//roleSet[mainRole[0]] = struct{}{}
+	//for _, role := range allRoles {
+	//	roleSet[role] = struct{}{}
+	//}
+	//allPermissions := make(map[string][]model.Permission)
+	//for role := range roleSet {
+	//	perms, err := r.enforcer.GetImplicitPermissionsForUser(role)
+	//	if err != nil {
+	//		continue
+	//	}
+	//	for _, p := range perms {
+	//		if len(p) >= 3 {
+	//			allPermissions[role] = append(allPermissions[role], model.Permission{
+	//				Action: p[1],
+	//				Object: p[2],
+	//			})
+	//		}
+	//	}
+	//}
+	//categorized := make(map[string][]model.Permission)
+	//for _, perms := range allPermissions {
+	//	for _, perm := range perms {
+	//		cat := determineCategory(perm.Object)
+	//		categorized[cat] = append(categorized[cat], perm)
+	//	}
+	//}
+	return model.CategorizedPermissions{}, nil
 }
