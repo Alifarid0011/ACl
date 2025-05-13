@@ -41,7 +41,8 @@ func (s *AuthServiceImpl) Login(req dto.LoginRequest, userAgent *utils.UserAgent
 	}
 	accessTokenExpired := time.Now().Add(config.Get.Token.ExpiryAccessToken * time.Minute)
 	refreshTokenExpired := time.Now().Add(config.Get.Token.ExpiryRefreshToken * time.Minute)
-	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), user.UID, user.Roles)
+	//@Todo: sub:abj:action=> atr map
+	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), user.UID, map[string]string{})
 	if errGenerateAccessToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", errGenerateAccessToken)
 	}
@@ -90,7 +91,8 @@ func (s *AuthServiceImpl) UseRefreshToken(req dto.RefreshRequest, userAgent *uti
 	}
 	accessTokenExpired := time.Now().Add(config.Get.Token.ExpiryAccessToken * time.Minute)
 	refreshTokenExpired := time.Now().Add(config.Get.Token.ExpiryRefreshToken * time.Minute)
-	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), OldRefreshToken.UserUid, OldRefreshToken.User.Roles)
+	//@Todo: sub:abj:action=> atr map
+	accessToken, errGenerateAccessToken := s.tokenManager.GenerateAccessToken(accessTokenExpired.Unix(), OldRefreshToken.UserUid, map[string]string{})
 	if errGenerateAccessToken != nil {
 		return dto.LoginResponse{}, fmt.Errorf("token generation failed: %w", errGenerateAccessToken)
 	}

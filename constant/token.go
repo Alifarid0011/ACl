@@ -12,3 +12,5 @@ const (
 	AccessTokenType  TokenType = "access_token"
 	UserUid          TokenType = "user_uid"
 )
+
+const ContextRolesKey = "roles"

@@ -25,6 +25,7 @@ func AuthMiddleware(blackRepo repository.BlackListTokenRepository, tokenManager 
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token is in black list"})
 			return
 		}
+		c.Set("claims", token)
 		c.Set("user_uid", token.UID)
 		c.Set("access_token", tokenString)
 		c.Next()
