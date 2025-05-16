@@ -1,12 +1,15 @@
 package router
 
 import (
+	"acl-casbin/middleware"
 	"acl-casbin/wire"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterUserRoutes(r *gin.Engine, app *wire.App) {
-	userRouter := r.Group("/user")
+	userRouter := r.Group("/users",
+		middleware.AuthMiddleware(app.BlackListRepo, app.TokenManager),
+		middleware.CasbinMiddleware(app.Enforcer))
 	{
 		userRouter.POST("/create", app.UserCtrl.Create)
 		userRouter.GET("/all", app.UserCtrl.GetAll)

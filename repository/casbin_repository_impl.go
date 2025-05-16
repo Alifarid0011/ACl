@@ -16,20 +16,20 @@ func NewCasbinRepository(enforcer *casbin.Enforcer) CasbinRepository {
 	return &casbinRepository{enforcer: enforcer}
 }
 
-func (r *casbinRepository) Enforce(sub, act, obj string) (bool, error) {
-	return r.enforcer.Enforce(sub, act, obj)
+func (r *casbinRepository) Enforce(sub, obj, act, attr, AllowOrDeny string) (bool, error) {
+	return r.enforcer.Enforce(sub, obj, act, attr, AllowOrDeny)
 }
 
-func (r *casbinRepository) AddPolicy(sub, act, obj string) (bool, error) {
-	added, err := r.enforcer.AddPolicy(sub, act, obj)
+func (r *casbinRepository) AddPolicy(sub, obj, act, attr, AllowOrDeny string) (bool, error) {
+	added, err := r.enforcer.AddPolicy(sub, obj, act, attr, AllowOrDeny)
 	if err == nil && added {
 		_ = r.enforcer.SavePolicy()
 	}
 	return added, err
 }
 
-func (r *casbinRepository) RemovePolicy(sub, act, obj string) (bool, error) {
-	removed, err := r.enforcer.RemovePolicy(sub, act, obj)
+func (r *casbinRepository) RemovePolicy(sub, obj, act, attr, AllowOrDeny string) (bool, error) {
+	removed, err := r.enforcer.RemovePolicy(sub, obj, act, attr, AllowOrDeny)
 	if err == nil && removed {
 		_ = r.enforcer.SavePolicy()
 	}
@@ -51,55 +51,24 @@ func (r *casbinRepository) GetPolicies() ([]model.CasbinPolicy, error) {
 	return policies, err
 }
 
-func (r *casbinRepository) AddGroupingPolicy(child, parent, policyType string) (bool, error) {
-	var added bool
-	var err error
-
-	switch policyType {
-	case "g":
-		added, err = r.enforcer.AddGroupingPolicy(child, parent)
-	case "g2":
-		added, err = r.enforcer.AddNamedGroupingPolicy("g2", child, parent)
-	default:
-		return false, nil
-	}
-
+func (r *casbinRepository) AddGroupingPolicy(child, parent string) (bool, error) {
+	added, err := r.enforcer.AddGroupingPolicy(child, parent)
 	if err == nil && added {
 		_ = r.enforcer.SavePolicy()
 	}
-
 	return added, err
 }
 
-func (r *casbinRepository) RemoveGroupingPolicy(child, parent, policyType string) (bool, error) {
-	var removed bool
-	var err error
-
-	switch policyType {
-	case "g":
-		removed, err = r.enforcer.RemoveGroupingPolicy(child, parent)
-	case "g2":
-		removed, err = r.enforcer.RemoveNamedGroupingPolicy("g2", child, parent)
-	default:
-		return false, nil
-	}
-
+func (r *casbinRepository) RemoveGroupingPolicy(child, parent string) (bool, error) {
+	removed, err := r.enforcer.RemoveGroupingPolicy(child, parent)
 	if err == nil && removed {
 		_ = r.enforcer.SavePolicy()
 	}
-
 	return removed, err
 }
 
-func (r *casbinRepository) GetGroupingPolicies(policyType string) ([][]string, error) {
-	switch policyType {
-	case "g":
-		return r.enforcer.GetGroupingPolicy()
-	case "g2":
-		return r.enforcer.GetNamedGroupingPolicy("g2")
-	default:
-		return [][]string{}, nil
-	}
+func (r *casbinRepository) GetGroupingPolicies() ([][]string, error) {
+	return r.enforcer.GetGroupingPolicy()
 }
 
 func (r *casbinRepository) GetPermissionsGroupedBySubject() ([]model.SubjectWithPermissions, error) {

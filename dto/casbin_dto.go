@@ -1,9 +1,11 @@
 package dto
 
 type CheckPermissionDTO struct {
-	Sub string `json:"sub" validate:"required"` // می‌تواند نقش یا یوزر باشد
-	Act string `json:"act" validate:"required"` // متد مانند GET, POST, PUT, DELETE
-	Obj string `json:"obj" validate:"required"` // مسیر مانند /user/all یا /approvals/:id
+	Sub         string `json:"sub" validate:"required"`  // می‌تواند نقش یا یوزر باشد
+	Act         string `json:"act" validate:"required"`  // متد مانند GET, POST, PUT, DELETE
+	Obj         string `json:"obj" validate:"required"`  // مسیر مانند /user/all یا /approvals/:id
+	Attr        string `json:"attr" validate:"required"` // *یا uid
+	AllowOrDeny string `json:"allow_or_deny" validate:"required,oneof=allow deny"`
 }
 
 type GroupingDTO struct {

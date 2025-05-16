@@ -15,8 +15,8 @@ func NewCasbinService(repo repository.CasbinRepository) CasbinService {
 	return &casbinService{repo: repo}
 }
 
-func (s *casbinService) AddGrouping(parent string, child string, policyType string) error {
-	added, err := s.repo.AddGroupingPolicy(child, parent, policyType)
+func (s *casbinService) AddGrouping(parent string, child string) error {
+	added, err := s.repo.AddGroupingPolicy(child, parent)
 	if err != nil {
 		return err
 	}
@@ -25,36 +25,26 @@ func (s *casbinService) AddGrouping(parent string, child string, policyType stri
 	}
 	return nil
 }
-func (s *casbinService) IsAllowed(sub, act, obj string) (bool, error) {
-	return s.repo.Enforce(sub, act, obj)
+func (s *casbinService) IsAllowed(sub, act, obj, attr, AllowOrDeny string) (bool, error) {
+	return s.repo.Enforce(sub, obj, act, attr, AllowOrDeny)
 }
 
-func (s *casbinService) GrantPermission(sub, act, obj string) (bool, error) {
-	return s.repo.AddPolicy(sub, act, obj)
+func (s *casbinService) GrantPermission(sub, obj, act, attr, AllowOrDeny string) (bool, error) {
+	return s.repo.AddPolicy(sub, obj, act, attr, AllowOrDeny)
 }
 
-func (s *casbinService) RevokePermission(sub, act, obj string) (bool, error) {
-	return s.repo.RemovePolicy(sub, act, obj)
+func (s *casbinService) RevokePermission(sub, act, obj, attr, AllowOrDeny string) (bool, error) {
+	return s.repo.RemovePolicy(sub, obj, act, attr, AllowOrDeny)
 }
 func (s *casbinService) GetAllCasbinData() (map[string]interface{}, error) {
 	policies, err := s.repo.GetPolicies()
 	if err != nil {
 		return nil, err
 	}
-
-	groupingPoliciesG, err := s.repo.GetGroupingPolicies("g")
-	if err != nil {
-		return nil, err
-	}
-	groupingPoliciesG2, err := s.repo.GetGroupingPolicies("g2")
-	if err != nil {
-		return nil, err
-	}
-
+	groupingPoliciesG, err := s.repo.GetGroupingPolicies()
 	return map[string]interface{}{
-		"policies":             policies,
-		"grouping_policies_g":  groupingPoliciesG,
-		"grouping_policies_g2": groupingPoliciesG2,
+		"policies":            policies,
+		"grouping_policies_g": groupingPoliciesG,
 	}, nil
 }
 func (s *casbinService) ListPermissions() ([]model.CasbinPolicy, error) {

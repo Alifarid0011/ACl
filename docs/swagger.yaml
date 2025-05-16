@@ -756,7 +756,7 @@ paths:
       summary: دریافت لیست اندپوینت‌ها
       tags:
       - Route
-  /user/{uid}:
+  /users/{uid}:
     delete:
       description: Delete user by UID (admin only)
       parameters:
@@ -778,6 +778,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Delete a user
       tags:
       - users
@@ -812,10 +814,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Update a user
       tags:
       - users
-  /user/all:
+  /users/all:
     get:
       description: Retrieve a list of all users
       responses:
@@ -831,10 +835,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Get all users
       tags:
       - users
-  /user/create:
+  /users/create:
     post:
       consumes:
       - application/json
@@ -865,10 +871,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Create a new user
       tags:
       - users
-  /user/me:
+  /users/me:
     get:
       description: Get authenticated user information from token
       responses:
@@ -884,10 +892,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Get current user info
       tags:
       - users
-  /user/uid/{uid}:
+  /users/uid/{uid}:
     get:
       description: Get a user by their UID
       parameters:
@@ -909,10 +919,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Find user by UID
       tags:
       - users
-  /user/username/{username}:
+  /users/username/{username}:
     get:
       description: Get a user object by username
       parameters:
@@ -934,6 +946,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - AuthBearer: []
       summary: Find user by username
       tags:
       - users

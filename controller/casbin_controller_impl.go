@@ -4,6 +4,7 @@ import (
 	"acl-casbin/dto"
 	"acl-casbin/dto/response"
 	"acl-casbin/service"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -37,7 +38,7 @@ func (ctl *ACLController) CheckPermission(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-	allowed, err := ctl.service.IsAllowed(req.Sub, req.Act, req.Obj)
+	allowed, err := ctl.service.IsAllowed(req.Sub, req.Obj, req.Act, req.Attr, req.AllowOrDeny)
 	if err != nil {
 		response.New(ctx).Message("بررسی دسترسی با خطا مواجه شد").
 			MessageID("acl.check.failed").
@@ -73,18 +74,18 @@ func (ctl *ACLController) CreatePolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-	added, err := ctl.service.GrantPermission(req.Sub, req.Act, req.Obj)
+	added, err := ctl.service.GrantPermission(req.Sub, req.Obj, req.Act, req.Attr, req.AllowOrDeny)
 	if err != nil || !added {
 		response.New(ctx).Message("ثبت مجوز با خطا مواجه شد").
 			MessageID("acl.policy.create.failed").
 			Status(http.StatusInternalServerError).
-			Errors(err).
+			Errors(errors.New("تبت مجوز با خطا مواجه شد")).
 			Dispatch()
 		return
 	}
 	response.New(ctx).Message("مجوز با موفقیت ثبت شد").
 		MessageID("acl.policy.create.success").
-		Status(http.StatusOK).
+		Status(http.StatusCreated).
 		Dispatch()
 }
 
@@ -135,7 +136,7 @@ func (ctl *ACLController) RemovePolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-	removed, err := ctl.service.RevokePermission(req.Sub, req.Act, req.Obj)
+	removed, err := ctl.service.RevokePermission(req.Sub, req.Obj, req.Act, req.Attr, req.AllowOrDeny)
 	if err != nil || !removed {
 		response.New(ctx).Message("حذف مجوز با خطا مواجه شد").
 			MessageID("acl.policy.remove.failed").
@@ -170,7 +171,7 @@ func (ctl *ACLController) AddGroupingPolicy(ctx *gin.Context) {
 			Dispatch()
 		return
 	}
-	err := ctl.service.AddGrouping(req.Parent, req.Child, req.Type)
+	err := ctl.service.AddGrouping(req.Parent, req.Child)
 	if err != nil {
 		response.New(ctx).Message("افزودن گروه با خطا مواجه شد").
 			MessageID("acl.grouping.add.failed").

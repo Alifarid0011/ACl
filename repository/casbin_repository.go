@@ -6,13 +6,13 @@ import (
 )
 
 type CasbinRepository interface {
-	Enforce(sub, act, obj string) (bool, error)
-	AddPolicy(sub, act, obj string) (bool, error)
-	RemovePolicy(sub, act, obj string) (bool, error)
+	Enforce(sub, obj, act, attr, AllowOrDeny string) (bool, error)
+	AddPolicy(sub, obj, act, attr, AllowOrDeny string) (bool, error)
+	RemovePolicy(sub, obj, act, attr, AllowOrDeny string) (bool, error)
 	GetPolicies() ([]model.CasbinPolicy, error)
-	AddGroupingPolicy(child, parent, policyType string) (bool, error)
-	RemoveGroupingPolicy(child, parent, policyType string) (bool, error)
-	GetGroupingPolicies(policyType string) ([][]string, error)
+	AddGroupingPolicy(child, parent string) (bool, error)
+	RemoveGroupingPolicy(child, parent string) (bool, error)
+	GetGroupingPolicies() ([][]string, error)
 	GetPermissionsGroupedBySubject() ([]model.SubjectWithPermissions, error)
 	GetCategorizedPermissionsByUserID(userID primitive.ObjectID) (model.CategorizedPermissions, error)
 }

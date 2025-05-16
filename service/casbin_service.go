@@ -6,11 +6,11 @@ import (
 )
 
 type CasbinService interface {
-	IsAllowed(sub, act, obj string) (bool, error)
-	GrantPermission(sub, act, obj string) (bool, error)
-	RevokePermission(sub, act, obj string) (bool, error)
+	IsAllowed(sub, obj, act, attr, AllowOrDeny string) (bool, error)
+	GrantPermission(sub, obj, act, attr, AllowOrDeny string) (bool, error)
+	RevokePermission(sub, obj, act, attr, AllowOrDeny string) (bool, error)
 	ListPermissions() ([]model.CasbinPolicy, error)
-	AddGrouping(parent string, child string, policyType string) error
+	AddGrouping(parent string, child string) error
 	GetAllCasbinData() (map[string]interface{}, error)
 	GetPermissionsBySubject() ([]model.SubjectWithPermissions, error)
 	GetUserCategorizedPermissions(userID primitive.ObjectID) (model.CategorizedPermissions, error)

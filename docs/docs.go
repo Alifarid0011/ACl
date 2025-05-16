@@ -666,8 +666,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/all": {
+        "/users/all": {
             "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Retrieve a list of all users",
                 "tags": [
                     "users"
@@ -695,8 +700,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/create": {
+        "/users/create": {
             "post": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Register a new user in the system",
                 "consumes": [
                     "application/json"
@@ -747,8 +757,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/me": {
+        "/users/me": {
             "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Get authenticated user information from token",
                 "tags": [
                     "users"
@@ -776,8 +791,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/uid/{uid}": {
+        "/users/uid/{uid}": {
             "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Get a user by their UID",
                 "tags": [
                     "users"
@@ -814,8 +834,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/username/{username}": {
+        "/users/username/{username}": {
             "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Get a user object by username",
                 "tags": [
                     "users"
@@ -852,8 +877,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{uid}": {
+        "/users/{uid}": {
             "put": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Update user details by UID (admin or self)",
                 "consumes": [
                     "application/json"
@@ -905,6 +935,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "Delete user by UID (admin only)",
                 "tags": [
                     "users"

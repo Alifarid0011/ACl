@@ -121,6 +121,6 @@ func (b *Builder) Dispatch() {
 		Data:   b.data,
 		Errors: b.errors,
 	}
-
 	b.c.JSON(b.code, resp)
+	b.c.Abort()
 }
